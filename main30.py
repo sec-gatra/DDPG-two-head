@@ -21,17 +21,17 @@ parser.add_argument('--Loadmodel', type=str2bool, default=False, help='Load pret
 parser.add_argument('--ModelIdex', type=int, default=100, help='which model to load')
 
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--Max_train_steps', type=int, default = 60000, help='Max training steps') #aslinya 5e6
+parser.add_argument('--Max_train_steps', type=int, default = 120000, help='Max training steps') #aslinya 5e6
 parser.add_argument('--save_interval', type=int, default=2500, help='Model saving interval, in steps.') #aslinya 1e5
 parser.add_argument('--eval_interval', type=int, default=2000, help='Model evaluating interval, in steps.') #aslinya 2e3
 
 parser.add_argument('--gamma', type=float, default=0.99, help='Discounted Factor')
 parser.add_argument('--net_width', type=int, default=1024, help='Hidden net width, s_dim-400-300-a_dim')
-parser.add_argument('--a_lr', type=float, default=2e-3, help='Learning rate of actor') # 2e-3
-parser.add_argument('--c_lr', type=float, default=1e-3, help='Learning rate of critic') # 1e-3
+parser.add_argument('--a_lr', type=float, default=4e-4, help='Learning rate of actor') # 2e-3
+parser.add_argument('--c_lr', type=float, default=5e-5, help='Learning rate of critic') # 1e-3
 parser.add_argument('--batch_size', type=int, default=128, help='batch_size of training')
-parser.add_argument('--random_steps', type=int, default=5000, help='random steps before trianing')
-parser.add_argument('--noise', type=float, default=0.1, help='exploring noise') #aslinya 0.1
+parser.add_argument('--random_steps', type=int, default=25000, help='random steps before trianing')
+parser.add_argument('--noise', type=float, default=0.2, help='exploring noise') #aslinya 0.1
 opt = parser.parse_args()
 opt.dvc = torch.device(opt.dvc) # from str to torch.device
 
@@ -46,8 +46,8 @@ def main():
     BrifEnvName = ['6G', 'LLdV2', 'Humanv4', 'HCv4','BWv3', 'BWHv3']
     
     # Build Env
-    env = GameState(30,7)
-    eval_env = GameState(30,7)
+    env = GameState(30,15)
+    eval_env = GameState(30,15)
     opt.state_dim = env.observation_space
     opt.action_dim = env.action_space
     opt.max_action = env.p_max   #remark: action space【-max,max】
