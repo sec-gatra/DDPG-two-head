@@ -72,7 +72,7 @@ class GameState:
 
         # 2) Power violation: only when total_power > p_max
         power_violation = max(0.0, total_daya - self.p_max)
-        penalty_power   = 1 * power_violation
+        penalty_power   = 0.1 * power_violation
 
         # Reward: throughput minus penalties
         reward = total_rate - penalty_rate - penalty_power
