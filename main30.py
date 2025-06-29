@@ -21,14 +21,14 @@ parser.add_argument('--Loadmodel', type=str2bool, default=False, help='Load pret
 parser.add_argument('--ModelIdex', type=int, default=100, help='which model to load')
 
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--Max_train_steps', type=int, default = 120000, help='Max training steps') #aslinya 5e6
+parser.add_argument('--Max_train_steps', type=int, default = 80000, help='Max training steps') #aslinya 5e6
 parser.add_argument('--save_interval', type=int, default=2500, help='Model saving interval, in steps.') #aslinya 1e5
 parser.add_argument('--eval_interval', type=int, default=2000, help='Model evaluating interval, in steps.') #aslinya 2e3
 
 parser.add_argument('--gamma', type=float, default=0.99, help='Discounted Factor')
 parser.add_argument('--net_width', type=int, default=1024, help='Hidden net width, s_dim-400-300-a_dim')
-parser.add_argument('--a_lr', type=float, default=4e-5, help='Learning rate of actor') # 2e-3
-parser.add_argument('--c_lr', type=float, default=5e-6, help='Learning rate of critic') # 1e-3
+parser.add_argument('--a_lr', type=float, default=5e-5, help='Learning rate of actor') # 2e-3
+parser.add_argument('--c_lr', type=float, default=3e-6, help='Learning rate of critic') # 1e-3
 parser.add_argument('--batch_size', type=int, default=128, help='batch_size of training')
 parser.add_argument('--random_steps', type=int, default=25000, help='random steps before trianing')
 parser.add_argument('--noise', type=float, default=0.2, help='exploring noise') #aslinya 0.1
@@ -141,7 +141,7 @@ def main():
                 langkah +=1
                 if total_steps <= opt.random_steps: #aslinya < aja, ide pengubahan ini tuh supaya selec action di train dulu.
                     #a = env.sample_valid_power()
-                    a = env.p
+                    a = env.sample_valid_power2()
                 else: 
                     a = agent.select_action(s, deterministic=False)
                 next_loc= env.generate_positions() #lokasi untuk s_t
@@ -167,6 +167,10 @@ def main():
                     a_loss, c_loss = agent.train()
                     writer.add_scalar("Loss/Actor", a_loss, total_steps)
                     writer.add_scalar("Loss/Critic", c_loss, total_steps)
+                    with torch.no_grad():
+                        s_batch, a_batch, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
+                        q_val = agent.q_critic(s_batch, a_batch).mean().item()
+                        writer.add_scalar("Q_value/Mean", q_val, total_steps)
                     # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, actor_loss:{a_loss}')
                     # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, c_loss:{c_loss}')
         
