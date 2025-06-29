@@ -199,8 +199,8 @@ def main():
                                 ALL_DATARATES_NODES[node_id - 1].append(result1[f'data_rate_{node_id}'])
                                 ALL_DATARATES.append(result1[f'data_rate_{node_id}'])
                                 ALL_DATARATES_RAND.append(result1[f'data_rate_rand{node_id}'])
-                            print(result1['avg_EE'])
-                            print(result1['avg_EE_rand'])
+                            #print(result1['avg_EE'])
+                            #print(result1['avg_EE_rand'])
                             EE_DDPG.append(result1['avg_EE'])
                             EE_RAND.append(result1['avg_EE_rand'])
                             RATE_SUCCESS.append(result1['pct_data_ok'])
@@ -213,7 +213,7 @@ def main():
                                 writer.add_scalar('energi efisiensi random', result1['avg_EE_rand'], global_step=st)
                                 writer.add_scalar('total daya', result1['avg_power'], global_step=st)
                                 writer.add_scalar('constraint daya', result1['pct_power_ok'], global_step=st)
-                            print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(st)}')
+                            #print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(st)}')
                             st+=1
                         
                         
