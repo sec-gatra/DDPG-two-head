@@ -18,6 +18,12 @@ class GameState:
         rand = np.random.rand(self.nodes)
         rand /= np.sum(rand)
         return rand * self.p_max
+        
+    def sample_valid_power2(self):
+        rand = np.random.rand(self.nodes)
+        rand /= np.sum(rand)  # jadi distribusi
+        scale = np.random.uniform(0.0, 1.0)  # skala acak antara 0 dan 1
+        return rand * (self.p_max+1) * scale
 
     def reset(self,gain,*, seed: Optional[int] = None, options: Optional[dict] = None):
         power = self.sample_valid_power()
@@ -54,6 +60,18 @@ class GameState:
         EE=self.hitung_efisiensi_energi(power,data_rate)
         
         total_daya=np.sum(power)
+        total_rate  = np.sum(data_rate)
+
+        rate_violation = np.sum(np.maximum(0.048 - data_rate, 0.0))
+        penalty_rate   = 10* rate_violation
+    
+
+        # 2) Power violation: only when total_power > p_max
+        power_violation = max(0.0, total_daya - self.p_max)
+        penalty_power   = 0.8 * power_violation
+
+        # Reward: throughput minus penalties
+        reward = total_rate - penalty_rate# - penalty_power
         
         # Condition 1: Budget exceeded
         fail_power = total_daya > self.p_max
