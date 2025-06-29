@@ -10,6 +10,11 @@ import os, shutil
 import argparse
 from datetime import datetime
 from utilscoba import str2bool,evaluate_policy
+import torch.nn.functional as F
+import numpy as np
+import torch
+import copy
+from torch.nn.utils import clip_grad_norm_
 
 
 '''Hyperparameter Setting'''
@@ -162,6 +167,10 @@ def main():
                     a_loss, c_loss = agent.train()
                     writer.add_scalar("Loss/Actor", a_loss, total_steps)
                     writer.add_scalar("Loss/Critic", c_loss, total_steps)
+                    with torch.no_grad():
+                        s_batch, a_batch, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
+                        q_val = agent.q_critic(s_batch, a_batch).mean().item()
+                        writer.add_scalar("Q_value/Mean", q_val, total_steps)
                     # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, actor_loss:{a_loss}')
                     # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, c_loss:{c_loss}')
         
