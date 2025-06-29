@@ -132,7 +132,7 @@ def main():
                 #print(total_steps)
                 langkah +=1
                 if total_steps <= opt.random_steps: #aslinya < aja, ide pengubahan ini tuh supaya selec action di train dulu.
-                    a = env.sample_valid_power()
+                    a = env.sample_valid_power2()
                     #a = env.p
                     print(a)
                 else: 
