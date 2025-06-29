@@ -14,7 +14,7 @@ class GameState:
         self.positions = self.generate_positions()
         self.observation_space = 2*nodes * nodes + nodes  # interferensi, channel gain, power
         self.action_space = nodes
-        self.p = np.random.uniform(0, 10, size=self.nodes)
+        self.p = np.random.uniform(0, self.p_max, size=self.nodes)
     def sample_valid_power(self):
         rand = np.random.rand(self.nodes)
         rand /= np.sum(rand)
