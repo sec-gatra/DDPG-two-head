@@ -62,7 +62,7 @@ class GameState:
         total_daya=np.sum(power)
         total_rate  = np.sum(data_rate)
 
-        rate_violation = np.sum(np.maximum(0.048 - data_rate, 0.0))
+        rate_violation = np.sum(np.maximum(0.152 - data_rate, 0.0))
         penalty_rate   = 10* rate_violation
     
 
