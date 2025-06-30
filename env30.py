@@ -23,7 +23,7 @@ class GameState:
         rand = np.random.rand(self.nodes)
         rand /= np.sum(rand)  # jadi distribusi
         scale = np.random.uniform(0.0, 1.0)  # skala acak antara 0 dan 1
-        return rand * (self.p_max+1) * scale
+        return rand * (self.p_max+0.5) * scale
 
     def reset(self,gain,*, seed: Optional[int] = None, options: Optional[dict] = None):
         power = self.sample_valid_power()
