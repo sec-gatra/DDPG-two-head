@@ -67,7 +67,7 @@ class GameState:
         fail_power = total_daya > self.p_max
 
         rate_violation = np.sum(np.maximum(0.08 - data_rate, 0.0))
-        penalty_rate   = 80 * rate_violation
+        penalty_rate   = 10 * rate_violation
     
 
         # 2) Power violation: only when total_power > p_max
@@ -75,7 +75,7 @@ class GameState:
         penalty_power   = 0.1 * power_violation
 
         # Reward: throughput minus penalties
-        reward = EE + 25*total_rate - penalty_rate #- penalty_power
+        reward = EE + 10*total_rate - penalty_rate #- penalty_power
         # Final done flag for “dead/win”
         dw = bool(fail_power)
 
