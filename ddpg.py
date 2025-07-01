@@ -19,7 +19,7 @@ class DDPG_agent():
 		self.q_critic_optimizer = torch.optim.Adam(self.q_critic.parameters(), lr=self.c_lr)
 		self.q_critic_target = copy.deepcopy(self.q_critic)
 
-		self.replay_buffer = ReplayBuffer(self.state_dim, self.action_dim, max_size=int(40000), dvc=self.dvc)
+		self.replay_buffer = ReplayBuffer(self.state_dim, self.action_dim, max_size=int(150000), dvc=self.dvc)
 		
 	def select_action(self, state, deterministic):
 		with torch.no_grad():
