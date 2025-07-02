@@ -75,7 +75,7 @@ class GameState:
         penalty_power   = 0.1 * power_violation
 
         # Reward: throughput minus penalties
-        reward = 0.5*EE  - 50*penalty_rate #+ total_rate #- penalty_power
+        reward = 0.1*EE  - 20*penalty_rate +10* total_rate #- penalty_power
         # Final done flag for “dead/win”
         dw = bool(fail_power)
 
