@@ -241,6 +241,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     total_reward = 0
     max_iter=200
     channel_gain_reward = channel_gain
+    '''
     for j in range(3):
         iterasi = 0
         done = False
@@ -261,6 +262,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             #print(i)
             state = s_next
             channel_gain_reward = next_channel_gain
+    '''
 
     for _ in range(turns):
         done = False
