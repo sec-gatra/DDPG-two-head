@@ -245,7 +245,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
         iterasi = 0
         done = False
         
-        while not done:
+        for i in range(200):
             # Take deterministic actions at test time
             a = agent.select_action(state, deterministic=True)
             next_loc = env.generate_positions()
@@ -258,7 +258,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
 
             total_reward += re
             iterasi +=1
-            print(iterasi)
+            print(i)
             state = s_next
             channel_gain_reward = next_channel_gain
 
