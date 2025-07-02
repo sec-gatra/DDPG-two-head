@@ -258,7 +258,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
 
             total_reward += re
             iterasi +=1
-            print(i)
+            #print(i)
             state = s_next
             channel_gain_reward = next_channel_gain
 
