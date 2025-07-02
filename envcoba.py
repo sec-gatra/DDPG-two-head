@@ -67,7 +67,7 @@ class GameState:
         fail_power = total_daya > self.p_max
 
         rate_violation = np.sum(np.maximum(0.08 - data_rate, 0.0))
-        penalty_rate   = 10 * rate_violation
+        penalty_rate   = 3 * rate_violation
     
 
         # 2) Power violation: only when total_power > p_max
