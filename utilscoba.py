@@ -238,12 +238,31 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     count_rand=0
     jumlah_data_rate = 0
     jumlah_data_rate_rand=0
+    total_reward = 0
+    max_iter=200
+    channel_gain_reward = channel_gain
+    for j in range(3):
+        iterasi = 0
+        done = False
+        while not done:
+            # Take deterministic actions at test time
+            a = agent.select_action(state, deterministic=True)
+            next_loc = env.generate_positions()
+            next_channel_gain= env.generate_channel_gain(next_loc)
+            s_next, re, dw, tr, info = env.step(a, channel_gain_reward, next_channel_gain)
+            done = (dw or tr)
+            if iterasi == max_iter :
+                done == True
+
+            total_reward += re
+            iterasi +=1
+            state = s_next
+            channel_gain_reward = next_channel_gain
 
     for _ in range(turns):
         done = False
         MAX_STEPS = 1
         step_count = 0
-
         while not done:
             step_count += 1
             total_steps += 1
@@ -395,6 +414,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
         'data_rate_rand10': dr_rand10,
         'data_rate_pass' : count, 
         'data_rate_rand_pass' : count_rand,
+        'reward_train' : total_reward/3,
         #'data_rate_total' : jumlah_data_rate,
         #'data_rate_total_rand' : jumlah_data_rate_rand
         
