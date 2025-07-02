@@ -56,7 +56,7 @@ class GameState:
         data_rate=self.hitung_data_rate(sinr)
         data_rate_constraint=[]
         for i in range(self.nodes):
-            data_rate_constraint.append(2*self.step_function(0.152-data_rate[i]))
+            data_rate_constraint.append(2*self.step_function(0.12-data_rate[i]))
             #data_rate_constraint.append(20*(data_rate[i]-4))
         EE=self.hitung_efisiensi_energi(power,data_rate)
         
@@ -75,7 +75,7 @@ class GameState:
         penalty_power   = 0.1 * power_violation
 
         # Reward: throughput minus penalties
-        reward = 0.5*EE + total_rate - penalty_rate #- penalty_power
+        reward = 0.5*EE  - 50*penalty_rate #+ total_rate #- penalty_power
         # Final done flag for “dead/win”
         dw = bool(fail_power)
 
