@@ -244,6 +244,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     for j in range(3):
         iterasi = 0
         done = False
+        print(iterasi)
         while not done:
             # Take deterministic actions at test time
             a = agent.select_action(state, deterministic=True)
