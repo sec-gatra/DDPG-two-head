@@ -142,6 +142,7 @@ def main():
                     print(np.sum(env.sample_valid_power()))
                     #a = env.p
                     print(a)
+                    print(langkah)
                 else: 
                     a = agent.select_action(s, deterministic=False)
                 next_loc= env.generate_positions() #lokasi untuk s_t
