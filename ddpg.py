@@ -124,5 +124,5 @@ class ReplayBuffer():
 
 	def sample(self, batch_size):
 		ind = torch.randint(0, self.size, device=self.dvc, size=(batch_size,))
-		print(ind)
+		#print(ind)
 		return self.s[ind], self.a[ind], self.r[ind], self.s_next[ind], self.dw[ind]
