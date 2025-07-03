@@ -201,7 +201,7 @@ def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
             a = agent.select_action(state, deterministic=True)
             next_loc = env.generate_positions()
             next_channel_gain= env.generate_channel_gain(next_loc)
-            s_next, re, dw, tr, info = env.step(a, channel_gain_reward, next_channel_gain)
+            s_next, re, dw, tr, info = env.step(a, channel_gain, next_channel_gain)
             if iterasi == max_iter :
                 tr ==True
             done = (dw or tr)
@@ -211,7 +211,7 @@ def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
             iterasi +=1
             #print(i)
             state = s_next
-            channel_gain_reward = next_channel_gain
+            channel_gain = next_channel_gain
     return int(total_reward/3)
 def evaluate_policy(channel_gain, state, env, agent, turns=1):
     env = GameState(10, 3)
