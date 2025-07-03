@@ -193,7 +193,26 @@ class Q_Critic(nn.Module):
         x = F.relu(self.ln3(self.l3(x)))                 # [B, net_width//4]
         q = self.l4(x)                                   # [B, 1]
         return q
+def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
+    total_reward = 0
+    for j in range(turns):
+        for i in range(200):
+            # Take deterministic actions at test time
+            a = agent.select_action(state, deterministic=True)
+            next_loc = env.generate_positions()
+            next_channel_gain= env.generate_channel_gain(next_loc)
+            s_next, re, dw, tr, info = env.step(a, channel_gain_reward, next_channel_gain)
+            if iterasi == max_iter :
+                tr ==True
+            done = (dw or tr)
+            
 
+            total_reward += re
+            iterasi +=1
+            #print(i)
+            state = s_next
+            channel_gain_reward = next_channel_gain
+    return int(total_reward/3)
 def evaluate_policy(channel_gain, state, env, agent, turns=1):
     env = GameState(10, 3)
     total_scores = 0
