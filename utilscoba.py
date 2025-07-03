@@ -202,8 +202,8 @@ def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
             next_loc = env.generate_positions()
             next_channel_gain= env.generate_channel_gain(next_loc)
             s_next, re, dw, tr, info = env.step(a, channel_gain, next_channel_gain)
-            if iterasi == max_iter :
-                tr ==True
+            #if iterasi == max_iter :
+            #    tr ==True
             done = (dw or tr)
             
 
