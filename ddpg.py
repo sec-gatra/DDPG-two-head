@@ -89,13 +89,13 @@ class DDPG_agent():
 				target_param.data.copy_(self.tau * param.data + (1 - self.tau) * target_param.data)
 		return a_loss.item(), q_loss.item()
 
-	def save(self,EnvName, timestep):
-		torch.save(self.actor.state_dict(), "./model/{}_actor{}.pth".format(EnvName,timestep))
-		torch.save(self.q_critic.state_dict(), "./model/{}_q_critic{}.pth".format(EnvName,timestep))
+	def save(self,EnvName, timestep,EE,Datarate):
+		torch.save(self.actor.state_dict(), "./model/{}_actor{}EE{}Datarate{}.pth".format(EnvName,timestep,EE,Datarate))
+		torch.save(self.q_critic.state_dict(), "./model/{}_q_critic{}EE{}Datarate{}.pth".format(EnvName,timestep,EE,Datarate))
 
-	def load(self,EnvName, timestep):
-		self.actor.load_state_dict(torch.load("./model/{}_actor{}.pth".format(EnvName, timestep), map_location=self.dvc))
-		self.q_critic.load_state_dict(torch.load("./model/{}_q_critic{}.pth".format(EnvName, timestep), map_location=self.dvc))
+	def load(self,EnvName, timestep,EE,Datarate):
+		self.actor.load_state_dict(torch.load("./model/{}_actor{}EE{}Datarate{}.pth".format(EnvName, timestep,EE,Datarate), map_location=self.dvc))
+		self.q_critic.load_state_dict(torch.load("./model/{}_q_critic{}EE{}Datarate{}.pth".format(EnvName, timestep,EE,Datarate), map_location=self.dvc))
 
 
 class ReplayBuffer():
