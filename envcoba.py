@@ -66,7 +66,7 @@ class GameState:
         # Condition 1: Budget exceeded
         fail_power = total_daya > self.p_max
 
-        rate_violation = np.sum(np.maximum(0.08 - data_rate, 0.0))
+        rate_violation = np.sum(np.maximum(0.152 - data_rate, 0.0))
         penalty_rate   = 3 * rate_violation
     
 
