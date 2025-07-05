@@ -149,6 +149,8 @@ def main():
                 next_channel_gain=env.generate_channel_gain(next_loc) #channel gain untuk s_t
                 s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
                 writer.add_scalar("Reward iterasi", r, total_steps)
+                if info['EE'] >= 5 and info['data_rate_pass']>=0.5*env.nodes :
+                    agent.save(BrifEnvName[opt.EnvIdex], info['EE'],info[data_rate_pass])
 
                 loc= env.generate_positions()
                 channel_gain=env.generate_channel_gain(loc)
@@ -187,10 +189,10 @@ def main():
                     writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
                     writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
                     writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
-                    '''
+                    
                     if total_steps == opt.Max_train_steps:
                         st=0
-                        for i in range(15000):
+                        for i in range(5000):
                             loc_eval= env.generate_positions() #lokasi untuk s_t
                             channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
                             state_eval,inf=eval_env.reset(channel_gain_eval)
@@ -220,7 +222,7 @@ def main():
                                 writer.add_scalar('constraint daya', result1['pct_power_ok'], global_step=st)
                             #print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(st)}')
                             st+=1
-                       ''' 
+                        
                         
 
                     print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, data rate : {result["pct_data_ok"]}')
