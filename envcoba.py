@@ -50,6 +50,7 @@ class GameState:
             x=1
         return x
     def step(self,power,channel_gain,next_channel_gain):
+        #a=channel_gain
         intr=self.interferensi(power,channel_gain)
         next_intr=self.interferensi(power,next_channel_gain)
         sinr=self.hitung_sinr(channel_gain,intr,power)
@@ -69,7 +70,9 @@ class GameState:
 
         rate_violation = np.sum(np.maximum(0.152 - data_rate, 0.0))
         penalty_rate   = rate_violation
-    
+        print(f'channel gain {channel_gain}')
+        print(f'data rate {data_rate}')
+        print(f'EE {EE}')
 
         # 2) Power violation: only when total_power > p_max
         power_violation = max(0.0, total_daya - self.p_max)
