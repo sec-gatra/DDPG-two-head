@@ -107,7 +107,9 @@ def main():
     if opt.Loadmodel: agent.load(BrifEnvName[opt.EnvIdex], opt.ModelIdex)
 
     if opt.render:
+        st=0
         for i in range(5000):
+                            st+=1
                             loc_eval= env.generate_positions() #lokasi untuk s_t
                             channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
                             state_eval,inf=eval_env.reset(channel_gain_eval)
