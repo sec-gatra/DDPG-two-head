@@ -153,7 +153,7 @@ def main():
                 if total_steps > opt.random_steps:
                     if info['EE'] >= 100 and info['data_rate_pass']>=0.75*env.nodes :
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps/1000))
-                        save.append(int(total_steps/1000)
+                        save.append(int(total_steps/1000))
 
                 loc= env.generate_positions()
                 channel_gain=env.generate_channel_gain(loc)
