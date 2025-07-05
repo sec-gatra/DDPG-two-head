@@ -120,6 +120,8 @@ def main():
         total_steps = 0
         lr_steps = 0
         save=[]
+        ee=[]
+        datret=[]
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
             lr_steps+=1
             if lr_steps==sepertiga_eps :
@@ -154,6 +156,8 @@ def main():
                     if info['EE'] >= 100 and info['data_rate_pass']>=0.75*env.nodes :
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save.append(int(total_steps))
+                        ee.append(info['EE'])
+                        datret.append(info['data_rate_pass'])
 
                 loc= env.generate_positions()
                 channel_gain=env.generate_channel_gain(loc)
@@ -381,6 +385,8 @@ def main():
         print(EE_RAND)
         print("The end")
         print(save)
+        print(ee)
+        print(datret)
 
 
 #%load_ext tensorboard
