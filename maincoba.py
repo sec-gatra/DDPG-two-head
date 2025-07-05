@@ -252,24 +252,15 @@ def main():
         if opt.write:
             writer.add_figure('CDF Data Rate Sistem', fig5, global_step=st)
             plt.close(fig5)
-        print(len(EE_DDPG))
-        print(len(EE_RAND))
-        print(len(data_rate_1))
-        print(len(data_rate_4))
-        print(len(data_rate_7))
-        print(len(data_rate_10))
-        print(len(POWER_DDPG))
-        print(len(POWER_RAND))
-        print(len(ALL_DATARATES))
-        print(len(ALL_DATARATES_RAND))
+
         # Buat dataframe
         df = pd.DataFrame({
             'EE_DDPG': EE_DDPG,
             'EE_RAND': EE_RAND,
-            'data_rate_1' :data_rate_1,
-            'data_rate_4' :data_rate_4,
-            'data_rate_7' :data_rate_7,
-            'data_rate_10' :data_rate_10,
+            #'data_rate_1' :data_rate_1,
+            #'data_rate_4' :data_rate_4,
+            #'data_rate_7' :data_rate_7,
+            #'data_rate_10' :data_rate_10,
             #'ALL_DATARATES' : ALL_DATARATES,
             'POWER_DDPG': POWER_DDPG,
             'POWER_RAND': POWER_RAND,
