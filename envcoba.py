@@ -146,6 +146,34 @@ class GameState:
 
         # Simpan posisi [controller, sensor] ke self.positions untuk dipakai jika perlu
         return cdist(gwLoc, dvLoc)
+    def generate_channel_gain(self, dist, sigma_shadow_dB=7.0, frek=6, transmit_power=1, lambdA=0.05, plExponent=2.5):
+        N = self.nodes
+
+    # Convert frequency to wavelength if not provided
+        if lambdA is None:
+            c = 3e8  # speed of light
+            lambdA = c / (frek * 1e9)  # Convert GHz to Hz
+
+    # Shadow fading in dB
+        S_dB = sigma_shadow_dB * np.random.standard_normal((N, N))
+        S_linear = 10 ** (S_dB / 10)
+
+        # Rayleigh fading (complex)
+        h = (1 / np.sqrt(2)) * (
+            np.random.standard_normal((N, N)) + 1j * np.random.standard_normal((N, N))
+        )
+    
+        # Calculate channel gain (received power)
+        power = (
+            transmit_power
+            * (4 * np.pi / lambdA) ** (-2)
+            * (np.power(dist, -plExponent))
+            * S_linear
+            * np.abs(h) ** 2
+        )
+    
+        return power
+    '''
     def generate_channel_gain(self,dist, sigma_shadow_dB=7.0, frek = 6):
         N = self.nodes
         H = np.zeros((N, N))
@@ -161,27 +189,29 @@ class GameState:
                     H[i, j] = 10 ** (-total_loss_dB / 10) * rayleigh_fading
                 #else :
                 #    H[i, j] = np.abs(np.random.rayleigh(scale=1.0)) ** 2    
+    
         return H
-    def interferensi(self, power,channel_gain):
+    '''
+    def interferensi(self, power, channel_gain):
         interferensi = np.zeros((self.nodes, self.nodes))
         for i in range(self.nodes):
             for j in range(self.nodes):
                 if i != j:
-                    interferensi[i][j] = channel_gain[i][j] * power [i]
-                else:
-                    interferensi[i][j] = 0
+                    interferensi[i][j] = channel_gain[i][j] * power[j]  # ✅ FIXED
         return interferensi        
+    
     def hitung_sinr(self, channel_gain, interferensi, power):
         sinr = np.zeros(self.nodes)
         for node_idx in range(self.nodes):
-            sinr_numerator = (abs(channel_gain[node_idx][node_idx])) * power[node_idx]
-            sinr_denominator = self.noise_power + np.sum([(abs(interferensi[node_idx][i])) for i in range(self.nodes) if i != node_idx]) #aslinya noise_power**2
-            sinr[node_idx] = sinr_numerator / sinr_denominator
-        return sinr 
+            desired = channel_gain[node_idx][node_idx] * power[node_idx]
+            interference = np.sum(interferensi[node_idx])  # semua j ≠ i udah dihitung, [i][i] = 0
+            sinr[node_idx] = desired / (interference + self.noise_power)
+        return sinr
+
 
     def hitung_data_rate(self, sinr):
         sinr = np.maximum(sinr, 0)  # jika ada yang negatif, dibatasi 0
-        return np.log(1 + sinr)
+        return np.log2(1 + sinr)
 
     def hitung_efisiensi_energi(self, power, data_rate):
         """Menghitung efisiensi energi total"""
