@@ -107,108 +107,12 @@ def main():
     if opt.Loadmodel: agent.load(BrifEnvName[opt.EnvIdex], opt.ModelIdex)
 
     if opt.render:
-        
-        while True:
-            loc = env.generate_positions()
-            channel_gain=env.generate_channel_gain(loc)
-            state_eval1,inf=eval_env.reset(channel_gain)
-            state_eval1 = np.array(state_eval1, dtype=np.float32)
-            result = evaluate_policy(channel_gain,state_eval1,eval_env, agent, turns=1)
-            
-            #print('EnvName:', BrifEnvName[opt.EnvIdex], 'score:', score, )
-    else:
-        total_steps = 0
-        lr_steps = 0
-        save=[]
-        ee=[]
-        datret=[]
-        while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
-            lr_steps+=1
-            if lr_steps==sepertiga_eps :
-                opt.a_lr=0.3 * opt.a_lr
-                opt.c_lr=0.3 * opt.c_lr
-                opt.noise=opt.noise-0.1
-                lr_steps=0
-            loc= env.generate_positions() #lokasi untuk s_t
-            channel_gain=env.generate_channel_gain(loc) #channel gain untuk s_t
-            s,info= env.reset(channel_gain, seed=env_seed)  # Do not use opt.seed directly, or it can overfit to opt.seed
-            env_seed += 1
-            done = False
-            langkah = 0
-            '''Interact & trian'''
-            while not done: 
-                #print(total_steps)
-                langkah +=1
-                if total_steps <= opt.random_steps: #aslinya < aja, ide pengubahan ini tuh supaya selec action di train dulu.
-                    a = env.sample_valid_power2()
-                    print(np.sum(a))
-                    print(np.sum(env.sample_valid_power()))
-                    #a = env.p
-                    print(a)
-                    print(total_steps)
-                else: 
-                    a = agent.select_action(s, deterministic=False)
-                next_loc= env.generate_positions() #lokasi untuk s_t
-                next_channel_gain=env.generate_channel_gain(next_loc) #channel gain untuk s_t
-                s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
-                writer.add_scalar("Reward iterasi", r, total_steps)
-                if total_steps > opt.random_steps:
-                    if info['EE'] >= 30 and info['data_rate_pass']>=0.7*env.nodes :
-                        agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
-                        save.append(int(total_steps))
-                        ee.append(info['EE'])
-                        datret.append(info['data_rate_pass'])
-
-                loc= env.generate_positions()
-                channel_gain=env.generate_channel_gain(loc)
-                if langkah == iterasi :
-                    tr= True
-                  
-                    
-                done = (dw or tr)
-
-                agent.replay_buffer.add(np.array(s, dtype=np.float32), a, r, np.array(s_next, dtype=np.float32), dw)
-                s = s_next
-                channel_gain=next_channel_gain
-                total_steps += 1
-
-                '''train'''
-                if total_steps >= opt.random_steps:
-                    a_loss, c_loss = agent.train()
-                    writer.add_scalar("Loss/Actor", a_loss, total_steps)
-                    writer.add_scalar("Loss/Critic", c_loss, total_steps)
-                    with torch.no_grad():
-                        s_batch, a_batch, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
-                        q_val = agent.q_critic(s_batch, a_batch).mean().item()
-                        writer.add_scalar("Q_value/Mean", q_val, total_steps)
-                    # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, actor_loss:{a_loss}')
-                    # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, c_loss:{c_loss}')
-        
-                '''record & log'''
-                if total_steps % opt.eval_interval == 0:
-                #if total_steps == opt.Max_train_steps:
-                    #st=0
-                    #for i in range(200):
-                    state_eval,inf=eval_env.reset(channel_gain)
-                    state_eval = np.array(state_eval, dtype=np.float32)
-                    result = evaluate_policy(channel_gain,state_eval,eval_env, agent, turns=1)
-                    result_reward = evaluate_policy_reward(channel_gain,state_eval,eval_env, agent, turns=3)
-                    writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
-                    writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
-                    writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
-                    
-                    if total_steps == opt.Max_train_steps:
-                        st=0
-                        for i in range(5000):
+        for i in range(5000):
                             loc_eval= env.generate_positions() #lokasi untuk s_t
                             channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
                             state_eval,inf=eval_env.reset(channel_gain_eval)
                             state_eval = np.array(state_eval, dtype=np.float32)
                             result1 = evaluate_policy(channel_gain_eval,state_eval,eval_env, agent, turns=1)
-                            data_rate_1.append(result1['data_rate_1'])
-                            data_rate_4.append(result1['data_rate_4'])
-                            data_rate_7.append(result1['data_rate_7'])
-                            data_rate_10.append(result1['data_rate_10'])
                             for node_id in range(1, env.nodes+1):
                                 ALL_DATARATES_NODES[node_id - 1].append(result1[f'data_rate_{node_id}'])
                                 ALL_DATARATES.append(result1[f'data_rate_{node_id}'])
@@ -221,26 +125,13 @@ def main():
                             RATE_SUCCESS_RAND.append(result1['pct_data_ok_rand'])
                             POWER_DDPG.append(result1['avg_power'])
                             POWER_RAND.append(result1['avg_power_rand'])
-                            if opt.write: 
-                                writer.add_scalar('ep_r', result1['avg_score'], global_step=st)
-                                writer.add_scalar('energi efisiensi', result1['avg_EE'], global_step=st)
-                                writer.add_scalar('energi efisiensi random', result1['avg_EE_rand'], global_step=st)
-                                writer.add_scalar('total daya', result1['avg_power'], global_step=st)
-                                writer.add_scalar('constraint daya', result1['pct_power_ok'], global_step=st)
-                            #print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(st)}')
-                            st+=1
-                        
-                        
 
-                    print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, data rate : {result["pct_data_ok"]}')
-
-
-                '''save model'''
-               # if total_steps % opt.save_interval == 0:
-               #     agent.save(BrifEnvName[opt.EnvIdex], int(total_steps/1000))
-                s = s_next
-                channel_gain=next_channel_gain
-
+                            #display the result
+                            writer.add_scalar('ep_r', result1['avg_score'], global_step=st)
+                            writer.add_scalar('energi efisiensi', result1['avg_EE'], global_step=st)
+                            writer.add_scalar('energi efisiensi random', result1['avg_EE_rand'], global_step=st)
+                            writer.add_scalar('total daya', result1['avg_power'], global_step=st)
+                            writer.add_scalar('constraint daya', result1['pct_power_ok'], global_step=st)
         x_ddpg, y_ddpg = compute_cdf(EE_DDPG)
         x_rand, y_rand = compute_cdf(EE_RAND)
         x_rate, y_rate = compute_cdf(RATE_SUCCESS)
@@ -291,7 +182,7 @@ def main():
             writer.add_figure('CDF Data Rate Success', fig2, global_step=st)
             plt.close(fig2)
 
-                # 3) Plot CDF power
+        # 3) Plot CDF power
         fig3, ax3 = plt.subplots()
         ax3.plot(x_p, y_p, label='Power DDPG')
         ax3.plot(x_p_rand, y_p_rand, label='Power Random')
@@ -334,7 +225,6 @@ def main():
         ax5.plot(x_dr_rand, y_dr_rand, label='Random (All Nodes)', linestyle='--')
 
         # Tambahkan garis vertikal R_min
-        R_min = 0.12  # Ganti sesuai kebutuhan
         ax5.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
 
         # Tambahkan panah horizontal untuk menunjukkan gap di CDF 0.5
@@ -381,6 +271,133 @@ def main():
 # Simpan ke Excel
         df.to_excel(f'energi_efisiensi.xlsx', index=False)
         df1.to_excel(f'all_data_rate.xlsx', index=False)
+            
+            #print('EnvName:', BrifEnvName[opt.EnvIdex], 'score:', score, )
+    else:
+        total_steps = 0
+        lr_steps = 0
+        save=[]
+        ee=[]
+        datret=[]
+        while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
+            lr_steps+=1
+            if lr_steps==sepertiga_eps :
+                opt.a_lr=0.3 * opt.a_lr
+                opt.c_lr=0.3 * opt.c_lr
+                opt.noise=opt.noise-0.1
+                lr_steps=0
+            loc= env.generate_positions() #lokasi untuk s_t
+            channel_gain=env.generate_channel_gain(loc) #channel gain untuk s_t
+            s,info= env.reset(channel_gain, seed=env_seed)  # Do not use opt.seed directly, or it can overfit to opt.seed
+            env_seed += 1
+            done = False
+            langkah = 0
+            '''Interact & trian'''
+            while not done: 
+                #print(total_steps)
+                langkah +=1
+                if total_steps <= opt.random_steps: #aslinya < aja, ide pengubahan ini tuh supaya selec action di train dulu.
+                    a = env.sample_valid_power2()
+                    print(np.sum(a))
+                    print(np.sum(env.sample_valid_power()))
+                    #a = env.p
+                    print(a)
+                    print(total_steps)
+                else: 
+                    a = agent.select_action(s, deterministic=False)
+                next_loc= env.generate_positions() #lokasi untuk s_t
+                next_channel_gain=env.generate_channel_gain(next_loc) #channel gain untuk s_t
+                s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
+                writer.add_scalar("Reward iterasi", r, total_steps)
+                if total_steps > opt.random_steps:
+                    if info['EE'] >= 20 and info['data_rate_pass']>=0.6*env.nodes :
+                        agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
+                        save.append(int(total_steps))
+                        ee.append(info['EE'])
+                        datret.append(info['data_rate_pass'])
+
+                loc= env.generate_positions()
+                channel_gain=env.generate_channel_gain(loc)
+                if langkah == iterasi :
+                    tr= True
+                  
+                    
+                done = (dw or tr)
+
+                agent.replay_buffer.add(np.array(s, dtype=np.float32), a, r, np.array(s_next, dtype=np.float32), dw)
+                s = s_next
+                channel_gain=next_channel_gain
+                total_steps += 1
+
+                '''train'''
+                if total_steps >= opt.random_steps:
+                    a_loss, c_loss = agent.train()
+                    writer.add_scalar("Loss/Actor", a_loss, total_steps)
+                    writer.add_scalar("Loss/Critic", c_loss, total_steps)
+                    with torch.no_grad():
+                        s_batch, a_batch, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
+                        q_val = agent.q_critic(s_batch, a_batch).mean().item()
+                        writer.add_scalar("Q_value/Mean", q_val, total_steps)
+                    # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, actor_loss:{a_loss}')
+                    # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, c_loss:{c_loss}')
+        
+                '''record & log'''
+                if total_steps % opt.eval_interval == 0:
+                #if total_steps == opt.Max_train_steps:
+                    #st=0
+                    #for i in range(200):
+                    state_eval,inf=eval_env.reset(channel_gain)
+                    state_eval = np.array(state_eval, dtype=np.float32)
+                    result = evaluate_policy(channel_gain,state_eval,eval_env, agent, turns=1)
+                    result_reward = evaluate_policy_reward(channel_gain,state_eval,eval_env, agent, turns=3)
+                    writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
+                    writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
+                    writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
+                    '''
+                    if total_steps == opt.Max_train_steps:
+                        for i in range(5000):
+                            loc_eval= env.generate_positions() #lokasi untuk s_t
+                            channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
+                            state_eval,inf=eval_env.reset(channel_gain_eval)
+                            state_eval = np.array(state_eval, dtype=np.float32)
+                            result1 = evaluate_policy(channel_gain_eval,state_eval,eval_env, agent, turns=1)
+                            data_rate_1.append(result1['data_rate_1'])
+                            data_rate_4.append(result1['data_rate_4'])
+                            data_rate_7.append(result1['data_rate_7'])
+                            data_rate_10.append(result1['data_rate_10'])
+                            for node_id in range(1, env.nodes+1):
+                                ALL_DATARATES_NODES[node_id - 1].append(result1[f'data_rate_{node_id}'])
+                                ALL_DATARATES.append(result1[f'data_rate_{node_id}'])
+                                ALL_DATARATES_RAND.append(result1[f'data_rate_rand{node_id}'])
+                            #print(result1['avg_EE'])
+                            #print(result1['avg_EE_rand'])
+                            EE_DDPG.append(result1['avg_EE'])
+                            EE_RAND.append(result1['avg_EE_rand'])
+                            RATE_SUCCESS.append(result1['pct_data_ok'])
+                            RATE_SUCCESS_RAND.append(result1['pct_data_ok_rand'])
+                            POWER_DDPG.append(result1['avg_power'])
+                            POWER_RAND.append(result1['avg_power_rand'])
+                            if opt.write: 
+                                writer.add_scalar('ep_r', result1['avg_score'], global_step=st)
+                                writer.add_scalar('energi efisiensi', result1['avg_EE'], global_step=st)
+                                writer.add_scalar('energi efisiensi random', result1['avg_EE_rand'], global_step=st)
+                                writer.add_scalar('total daya', result1['avg_power'], global_step=st)
+                                writer.add_scalar('constraint daya', result1['pct_power_ok'], global_step=st)
+                            #print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(st)}')
+                            st+=1
+                        
+                    '''  
+
+                    print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, data rate : {result["pct_data_ok"]}')
+
+
+                '''save model'''
+               # if total_steps % opt.save_interval == 0:
+               #     agent.save(BrifEnvName[opt.EnvIdex], int(total_steps/1000))
+                s = s_next
+                channel_gain=next_channel_gain
+
+       
         print(EE_DDPG)
         print(EE_RAND)
         print("The end")
