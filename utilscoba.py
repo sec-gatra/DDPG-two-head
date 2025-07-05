@@ -343,8 +343,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
                 info['data_rate9'],
                 info['data_rate10'],
             ]
-            if all(dr >= R_th for dr in data_rates):
-                count_data_ok += 1
+            count_data_ok = sum(1 for dr in data_rates if dr >= R_th)
 
             #cek data rate untuk random 
             data_rates1 = [
@@ -359,8 +358,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
                 info1['data_rate9'],
                 info1['data_rate10'],
             ]
-            if all(dr >= R_th for dr in data_rates1):
-                count_data_ok_rand += 1
+            count_data_ok_rand = sum(1 for dr in data_rates1 if dr >= R_th)
             '''
             for i in range(env.nodes):
                 if data_rates[i] >= R_th :
