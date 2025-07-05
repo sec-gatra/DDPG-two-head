@@ -27,7 +27,7 @@ parser.add_argument('--Loadmodel', type=str2bool, default=False, help='Load pret
 parser.add_argument('--ModelIdex', type=int, default=100, help='which model to load')
 
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--Max_train_steps', type=int, default = 4000, help='Max training steps') #aslinya 5e6
+parser.add_argument('--Max_train_steps', type=int, default = 10000, help='Max training steps') #aslinya 5e6
 parser.add_argument('--save_interval', type=int, default=2000, help='Model saving interval, in steps.') #aslinya 1e5
 parser.add_argument('--eval_interval', type=int, default=2000, help='Model evaluating interval, in steps.') #aslinya 2e3
 
@@ -187,6 +187,7 @@ def main():
                     writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
                     writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
                     writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
+                    '''
                     if total_steps == opt.Max_train_steps:
                         st=0
                         for i in range(15000):
@@ -219,7 +220,7 @@ def main():
                                 writer.add_scalar('constraint daya', result1['pct_power_ok'], global_step=st)
                             #print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(st)}')
                             st+=1
-                        
+                       ''' 
                         
 
                     print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, data rate : {result["pct_data_ok"]}')
