@@ -36,7 +36,7 @@ parser.add_argument('--net_width', type=int, default=1024, help='Hidden net widt
 parser.add_argument('--a_lr', type=float, default=5e-4, help='Learning rate of actor') # 2e-3
 parser.add_argument('--c_lr', type=float, default=3e-5, help='Learning rate of critic') # 1e-3
 parser.add_argument('--batch_size', type=int, default=128, help='batch_size of training')
-parser.add_argument('--random_steps', type=int, default=70000, help='random steps before trianing')#70000
+parser.add_argument('--random_steps', type=int, default=2000, help='random steps before trianing')#70000
 parser.add_argument('--noise', type=float, default=0.3, help='exploring noise') #aslinya 0.1
 opt = parser.parse_args()
 opt.dvc = torch.device(opt.dvc) # from str to torch.device
@@ -119,6 +119,7 @@ def main():
     else:
         total_steps = 0
         lr_steps = 0
+        save=[]
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
             lr_steps+=1
             if lr_steps==sepertiga_eps :
@@ -149,8 +150,10 @@ def main():
                 next_channel_gain=env.generate_channel_gain(next_loc) #channel gain untuk s_t
                 s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
                 writer.add_scalar("Reward iterasi", r, total_steps)
-                if info['EE'] >= 5 and info['data_rate_pass']>=0.5*env.nodes :
-                    agent.save(BrifEnvName[opt.EnvIdex], info['EE'],info[data_rate_pass])
+                if total_steps > opt.random_steps:
+                    if info['EE'] >= 100 and info['data_rate_pass']>=0.75*env.nodes :
+                        agent.save(BrifEnvName[opt.EnvIdex], int(total_steps/1000))
+                        save.append(int(total_steps/1000)
 
                 loc= env.generate_positions()
                 channel_gain=env.generate_channel_gain(loc)
@@ -229,8 +232,8 @@ def main():
 
 
                 '''save model'''
-                if total_steps % opt.save_interval == 0:
-                    agent.save(BrifEnvName[opt.EnvIdex], int(total_steps/1000))
+               # if total_steps % opt.save_interval == 0:
+               #     agent.save(BrifEnvName[opt.EnvIdex], int(total_steps/1000))
                 s = s_next
                 channel_gain=next_channel_gain
 
@@ -377,6 +380,7 @@ def main():
         print(EE_DDPG)
         print(EE_RAND)
         print("The end")
+        print(save)
 
 
 #%load_ext tensorboard
