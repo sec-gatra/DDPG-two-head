@@ -113,7 +113,7 @@ def main():
             channel_gain=env.generate_channel_gain(loc)
             state_eval1,inf=env.reset(channel_gain)
             state_eval1 = np.array(state_eval1, dtype=np.float32)
-            result = evaluate_policy(channel_gain,state_eval,eval_env, agent, turns=3)
+            result = evaluate_policy(channel_gain,state_eval1,eval_env1, agent, turns=3)
             
             #print('EnvName:', BrifEnvName[opt.EnvIdex], 'score:', score, )
     else:
