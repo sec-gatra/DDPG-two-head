@@ -70,7 +70,7 @@ class GameState:
 
         rate_violation = np.sum(np.maximum(0.152 - data_rate, 0.0))
         penalty_rate   = rate_violation
-        print(f'channel gain {channel_gain}')
+        #print(f'channel gain {channel_gain}')
         print(f'data rate {data_rate}')
         print(f'EE {EE}')
 
