@@ -81,7 +81,7 @@ class GameState:
 
         # Reward: throughput minus penalties
         #reward = 0.1*EE  - 20*penalty_rate +10* total_rate #- penalty_power
-        reward = EE  - 5*penalty_rate - 0.5 * total_daya + total_rate
+        reward = EE  - 10*penalty_rate - 0.5 * total_daya + total_rate
         #reward = 10*total_rate -  total_daya - 2.0 * penalty_rate
         #fairness_penalty = np.std(data_rate)  # biar agent ngasih alokasi lebih merata
         #reward -= 5 * fairness_penalty
