@@ -74,16 +74,27 @@ class GameState:
         #print(f'channel gain {channel_gain}')
         #print(f'data rate {data_rate}')
         #print(f'EE {EE}')
+        # Parameter dinamis
+
 
         # 2) Power violation: only when total_power > p_max
         power_violation = max(0.0, total_daya - self.p_max)
         penalty_power   = 0.1 * power_violation
-
+        k0 = 10           # Base penalty rate weight
+        alpha = 10        # Semakin tinggi EE, semakin berat penalty rate
+        beta = 0.5        # Penalti untuk total daya
+        gammas = 1         # Penguat untuk sum-rate
+        
+        # Koefisien penalty rate tergantung EE
+        k_dynamic = k0 + alpha * EE
+        
+        # Reward formula dinamis
+        reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate
         # Reward: throughput minus penalties
         #reward = 0.1*EE  - 20*penalty_rate +10* total_rate #- penalty_power
-        reward = EE  - 15*penalty_rate - 0.5 * total_daya + total_rate
-        if total_daya <= 10e-5:
-            reward -= 5000
+        #reward = EE  - 15*penalty_rate - 0.5 * total_daya + total_rate
+        #if total_daya <= 10e-5:
+        #    reward -= 5000
         #reward = 10*total_rate -  total_daya - 2.0 * penalty_rate
         #fairness_penalty = np.std(data_rate)  # biar agent ngasih alokasi lebih merata
         #reward -= 5 * fairness_penalty
