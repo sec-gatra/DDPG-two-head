@@ -9,7 +9,7 @@ class GameState:
         self.gamma = 0.99
         self.gammal=0.05
         self.beta = 1
-        self.noise_power = 0.01
+        self.noise_power = 2e-10
         self.area_size = area_size
         self.positions = self.generate_positions()
         self.observation_space = 2*nodes * nodes + nodes  # interferensi, channel gain, power
@@ -182,16 +182,30 @@ class GameState:
         )
     
         return power
-    '''
+    '''    
     def generate_channel_gain(self, dist, sigmaS=7.0, transmit_power=1.0, lambdA=0.05, plExponent=2.7):
         N = self.nodes
-        S = sigmaS * self.rng.randn(N, N)
+    
+        # Shadowing (log-normal in dB scale)
+        S = sigmaS * self.rng.standard_normal((N, N))
         S_linear = 10 ** (S / 10)
-
-        h = (1 / np.sqrt(2)) * (self.rng.randn(N, N) + 1j * self.rng.randn(N, N))
-        H_power = transmit_power * (4 * np.pi / lambdA) ** (-2) \
-                  * np.power(dist, -plExponent) * S_linear * (np.abs(h) ** 2)
+    
+        # Rayleigh fading (complex): use standard_normal instead of randn
+        real = self.rng.standard_normal((N, N))
+        imag = self.rng.standard_normal((N, N))
+        h = (1 / np.sqrt(2)) * (real + 1j * imag)
+    
+        # Compute channel gain (H_power)
+        H_power = (
+            transmit_power
+            * (4 * np.pi / lambdA) ** (-2)
+            * np.power(dist, -plExponent)
+            * S_linear
+            * np.abs(h) ** 2
+        )
+    
         return H_power
+
     '''
     def generate_channel_gain(self,dist, sigma_shadow_dB=7.0, frek = 6):
         N = self.nodes
