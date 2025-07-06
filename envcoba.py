@@ -153,7 +153,8 @@ class GameState:
 
         # Simpan posisi [controller, sensor] ke self.positions untuk dipakai jika perlu
         return cdist(gwLoc, dvLoc)
-    def generate_channel_gain(self, dist, sigma_shadow_dB=7.0, frek=6, transmit_power=1, lambdA=0.05, plExponent=2.5):
+    '''
+    def generate_channel_gain(self, dist, sigma_shadow_dB=7.0, frek=6, transmit_power=1, lambdA=0.05, plExponent=2.7):
         N = self.nodes
 
     # Convert frequency to wavelength if not provided
@@ -180,6 +181,16 @@ class GameState:
         )
     
         return power
+    '''
+    def generate_channel_gain(self, dist, sigmaS=7.0, transmit_power=1.0, lambdA=0.05, plExponent=2.7):
+        N = self.nodes
+        S = sigmaS * self.rng.randn(N, N)
+        S_linear = 10 ** (S / 10)
+
+        h = (1 / np.sqrt(2)) * (self.rng.randn(N, N) + 1j * self.rng.randn(N, N))
+        H_power = transmit_power * (4 * np.pi / lambdA) ** (-2) \
+                  * np.power(dist, -plExponent) * S_linear * (np.abs(h) ** 2)
+        return H_power
     '''
     def generate_channel_gain(self,dist, sigma_shadow_dB=7.0, frek = 6):
         N = self.nodes
