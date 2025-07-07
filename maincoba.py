@@ -108,7 +108,7 @@ def main():
 
     if opt.render:
         st=0
-        for i in range(5000):
+        for i in range(15000):
                             st+=1
                             loc_eval= env.generate_positions() #lokasi untuk s_t
                             channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
@@ -314,7 +314,7 @@ def main():
                 if total_steps > opt.random_steps:
                     if total_steps % 500 == 0 :
                         print(f'EE : {info["EE"]} dan Data Rate : {info["data_rate"]}, action : {a}')
-                    if info['EE'] >= 25 and info['data_rate_pass']>=0.7*env.nodes :
+                    if info['EE'] >= 15 and info['data_rate_pass']>=0.8*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save.append(int(total_steps))
