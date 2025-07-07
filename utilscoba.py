@@ -404,6 +404,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     pct_data_ok_rand  = 100 * count_data_ok_rand  / total_steps
     pct_power_ok_rand = 100 * count_power_ok_rand / total_steps
     return {
+        'action' : a,
         'avg_score':    avg_score,
         'avg_score_rand' : avg_score_rand,
         'avg_EE':       avg_EE,
