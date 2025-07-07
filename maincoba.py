@@ -318,7 +318,7 @@ def main():
                 if total_steps > opt.random_steps:
                     if total_steps % 500 == 0 :
                         print(f'EE : {info["EE"]} dan Data Rate : {info["data_rate"]}, action : {a}')
-                    if info['EE'] >= 15 and info['data_rate_pass']>=0.8*env.nodes :
+                    if info['EE'] >= 20 and info['data_rate_pass']>=0.8*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save.append(int(total_steps))
