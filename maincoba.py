@@ -124,7 +124,7 @@ def main():
                             print(f'channel gain : {channel_gain}')
                             print(f'power  : {result1["action"]}')
                             print(f'data rate : {result1["data_rate"]}')
-                            print(f'EE': {result1["avg_EE"]})
+                            print(f'EE: {result1["avg_EE"]}')
                             EE_DDPG.append(result1['avg_EE'])
                             EE_RAND.append(result1['avg_EE_rand'])
                             RATE_SUCCESS.append(result1['pct_data_ok'])
