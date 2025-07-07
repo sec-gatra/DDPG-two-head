@@ -283,6 +283,7 @@ def main():
         total_steps = 0
         lr_steps = 0
         save=[]
+        save2=[]
         ee=[]
         datret=[]
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
@@ -359,6 +360,12 @@ def main():
                     state_eval = np.array(state_eval, dtype=np.float32)
                     result = evaluate_policy(channel_gain,state_eval,eval_env, agent, turns=1)
                     result_reward = evaluate_policy_reward(channel_gain,state_eval,eval_env, agent, turns=3)
+                     if result['avg_EE'] >= 30 and result['data_rate_lolos']>=0.8*env.nodes :
+                        
+                        agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
+                        save2.append(int(total_steps))
+                        #ee.append(info['EE'])
+                        #datret.append(info['data_rate_pass'])
                     writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
                     writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
                     writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
