@@ -108,7 +108,7 @@ def main():
 
     if opt.render:
         st=0
-        for i in range(15000):
+        for i in range(5):
                             st+=1
                             loc_eval= env.generate_positions() #lokasi untuk s_t
                             channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
@@ -121,6 +121,10 @@ def main():
                                 ALL_DATARATES_RAND.append(result1[f'data_rate_rand{node_id}'])
                             #print(result1['avg_EE'])
                             #print(result1['avg_EE_rand'])
+                            print(f'channel gain : {channel_gain}')
+                            print(f'power  : {result1["action"]}')
+                            print(f'data rate : {result1["data_rate"]}')
+                            print(f'EE': {result1["avg_EE"]})
                             EE_DDPG.append(result1['avg_EE'])
                             EE_RAND.append(result1['avg_EE_rand'])
                             RATE_SUCCESS.append(result1['pct_data_ok'])
