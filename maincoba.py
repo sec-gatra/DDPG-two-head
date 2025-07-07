@@ -121,7 +121,7 @@ def main():
                                 ALL_DATARATES_RAND.append(result1[f'data_rate_rand{node_id}'])
                             #print(result1['avg_EE'])
                             #print(result1['avg_EE_rand'])
-                            print(f'channel gain : {channel_gain}')
+                            print(f'channel gain : {channel_gain_eval}')
                             print(f'power  : {result1["action"]}')
                             print(f'data rate : {result1["data_rate"]}')
                             print(f'EE: {result1["avg_EE"]}')
