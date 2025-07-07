@@ -108,7 +108,7 @@ def main():
 
     if opt.render:
         st=0
-        for i in range(5):
+        for i in range(1500):
                             st+=1
                             loc_eval= env.generate_positions() #lokasi untuk s_t
                             channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
