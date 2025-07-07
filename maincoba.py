@@ -77,6 +77,7 @@ def main():
     data_rate_4 =[]
     data_rate_7 =[]
     data_rate_10 =[]
+    CHANNEL_GAINS=[]
     
     # Seed Everything
     env_seed = opt.seed
@@ -125,6 +126,7 @@ def main():
                             #print(f'power  : {result1["action"]}')
                             #print(f'data rate : {result1["data_rate"]}')
                             #print(f'EE: {result1["avg_EE"]}')
+                            CHANNEL_GAINS.append(channel_gain_eval.copy()) 
                             EE_DDPG.append(result1['avg_EE'])
                             EE_RAND.append(result1['avg_EE_rand'])
                             RATE_SUCCESS.append(result1['pct_data_ok'])
@@ -138,6 +140,7 @@ def main():
                             writer.add_scalar('energi efisiensi random', result1['avg_EE_rand'], global_step=st)
                             writer.add_scalar('total daya', result1['avg_power'], global_step=st)
                             writer.add_scalar('constraint daya', result1['pct_power_ok'], global_step=st)
+        np.save('channel_gains.npy', np.array(CHANNEL_GAINS))
         x_ddpg, y_ddpg = compute_cdf(EE_DDPG)
         x_rand, y_rand = compute_cdf(EE_RAND)
         x_rate, y_rate = compute_cdf(RATE_SUCCESS)
