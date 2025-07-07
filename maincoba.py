@@ -300,11 +300,11 @@ def main():
                 langkah +=1
                 if total_steps <= opt.random_steps: #aslinya < aja, ide pengubahan ini tuh supaya selec action di train dulu.
                     a = env.sample_valid_power2()
-                    print(np.sum(a))
-                    print(np.sum(env.sample_valid_power()))
+                    #print(np.sum(a))
+                    #print(np.sum(env.sample_valid_power()))
                     #a = env.p
-                    print(a)
-                    print(total_steps)
+                    #print(a)
+                    #print(total_steps)
                 else: 
                     a = agent.select_action(s, deterministic=False)
                 next_loc= env.generate_positions() #lokasi untuk s_t
@@ -312,7 +312,8 @@ def main():
                 s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
                 writer.add_scalar("Reward iterasi", r, total_steps)
                 if total_steps > opt.random_steps:
-                    print(f'EE : {info["EE"]} dan Data Rate : {info["data_rate"]}')
+                    if total_steps % 500 == 0 :
+                        print(f'EE : {info["EE"]} dan Data Rate : {info["data_rate"]}, action : {a}')
                     if info['EE'] >= 25 and info['data_rate_pass']>=0.7*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
