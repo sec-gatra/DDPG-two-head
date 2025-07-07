@@ -316,8 +316,8 @@ def main():
                 s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
                 writer.add_scalar("Reward iterasi", r, total_steps)
                 if total_steps > opt.random_steps:
-                    if total_steps % 500 == 0 :
-                        print(f'EE : {info["EE"]} dan Data Rate : {info["data_rate"]}, action : {a}')
+                    #if total_steps % 500 == 0 :
+                    #    print(f'EE : {info["EE"]} dan Data Rate : {info["data_rate"]}, action : {a}')
                     if info['EE'] >= 20 and info['data_rate_pass']>=0.8*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
