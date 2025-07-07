@@ -87,9 +87,9 @@ class GameState:
         
         # Koefisien penalty rate tergantung EE
         k_dynamic = k0 + alpha * EE
-        
+        fairness_penalty = np.std(data_rate)
         # Reward formula dinamis
-        reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate
+        reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate - 10 * fairness_penalty
         # Reward: throughput minus penalties
         #reward = 0.1*EE  - 20*penalty_rate +10* total_rate #- penalty_power
         #reward = EE  - 15*penalty_rate - 0.5 * total_daya + total_rate
