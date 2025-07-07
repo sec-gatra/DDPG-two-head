@@ -420,6 +420,7 @@ def main():
         print(save)
         print(ee)
         print(datret)
+        print(save2)
 
 
 #%load_ext tensorboard
