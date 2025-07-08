@@ -1,3 +1,4 @@
+
 import numpy as np 
 from scipy.spatial.distance import cdist
 from typing import Optional
@@ -6,24 +7,25 @@ class GameState:
     def __init__(self, nodes, p_max, area_size=(20, 20)):
         self.nodes = nodes
         self.p_max = p_max
-        self.gamma = 0.99
+        self.gamma = 0.01
         self.beta = 1
-        self.noise_power = 0.01
+        self.noise_power = 2e-10
         self.area_size = area_size
         self.positions = self.generate_positions()
         self.observation_space = 2*nodes * nodes + nodes  # interferensi, channel gain, power
         self.action_space = nodes
         self.p = np.random.uniform(0, 3, size=self.nodes)
+        self.rng = np.random.default_rng()
+        self.Rmin = 0.15
     def sample_valid_power(self):
         rand = np.random.rand(self.nodes)
         rand /= np.sum(rand)
         return rand * self.p_max
-        
     def sample_valid_power2(self):
         rand = np.random.rand(self.nodes)
         rand /= np.sum(rand)  # jadi distribusi
         scale = np.random.uniform(0.0, 1.0)  # skala acak antara 0 dan 1
-        return rand * (self.p_max+0.5) * scale
+        return rand * (self.p_max) * scale
 
     def reset(self,gain,*, seed: Optional[int] = None, options: Optional[dict] = None):
         power = self.sample_valid_power()
@@ -53,28 +55,35 @@ class GameState:
         next_intr=self.interferensi(power,next_channel_gain)
         sinr=self.hitung_sinr(channel_gain,intr,power)
         data_rate=self.hitung_data_rate(sinr)
-        data_rate_constraint=[]
-        for i in range(self.nodes):
-            data_rate_constraint.append(5*self.step_function(0.048-data_rate[i]))
-            #data_rate_constraint.append(20*(data_rate[i]-4))
+        count_data_ok = sum(1 for dr in data_rate if dr >= self.Rmin)
         EE=self.hitung_efisiensi_energi(power,data_rate)
         
         total_daya=np.sum(power)
         total_rate  = np.sum(data_rate)
-
-        rate_violation = np.sum(np.maximum(0.048- data_rate, 0.0))
-        penalty_rate   = 10* rate_violation
-    
-
-        # 2) Power violation: only when total_power > p_max
-        power_violation = max(0.0, total_daya - self.p_max)
-        penalty_power   = 0.8 * power_violation
-
-        # Reward: throughput minus penalties
-        #reward = total_rate - penalty_rate # - penalty_power
         
         # Condition 1: Budget exceeded
         fail_power = total_daya > self.p_max
+        rate_violation = np.sum(np.maximum(self.Rmin - data_rate, 0.0))
+        penalty_rate   = rate_violation
+        #print(f'channel gain {channel_gain}')
+        #print(f'data rate {data_rate}')
+        #print(f'EE {EE}')
+        # Parameter dinamis
+
+
+        # 2) Power violation: only when total_power > p_max
+        power_violation = max(0.0, total_daya - self.p_max)
+        penalty_power   = 0.1 * power_violation
+        k0 = 10           # Base penalty rate weight
+        alpha = 1        # Semakin tinggi EE, semakin berat penalty rate
+        beta = 0.5        # Penalti untuk total daya
+        gammas = 1         # Penguat untuk sum-rate
+        
+        # Koefisien penalty rate tergantung EE
+        k_dynamic = k0 + alpha * EE
+        #fairness_penalty = np.std(data_rate)
+        # Reward formula dinamis
+        reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
 
         # Condition 2: Any data rate below threshold
         #min_rate = 0.5
@@ -85,40 +94,11 @@ class GameState:
 
         info = {
         'EE': EE,
-        'data_rate1': data_rate[0],
-        'data_rate2': data_rate[1],
-        'data_rate3': data_rate[2],
-        'data_rate4': data_rate[3],
-        'data_rate5': data_rate[4],
-        'data_rate6': data_rate[5],
-        'data_rate7': data_rate[6],
-        'data_rate8': data_rate[7],
-        'data_rate9': data_rate[8],
-        'data_rate10': data_rate[9],
-        'data_rate11': data_rate[10],
-        'data_rate12': data_rate[11],
-        'data_rate13': data_rate[12],
-        'data_rate14': data_rate[13],
-        'data_rate15': data_rate[14],
-        'data_rate16': data_rate[15],
-        'data_rate17': data_rate[16],
-        'data_rate18': data_rate[17],
-        'data_rate19': data_rate[18],
-        'data_rate20': data_rate[19],
-        'data_rate21': data_rate[20],
-        'data_rate22': data_rate[21],
-        'data_rate23': data_rate[22],
-        'data_rate24': data_rate[23],
-        'data_rate25': data_rate[24],
-        'data_rate26': data_rate[25],
-        'data_rate27': data_rate[26],
-        'data_rate28': data_rate[27],
-        'data_rate29': data_rate[28],
-        'data_rate30': data_rate[29],
+        'data_rate_pass' : count_data_ok,
         'total_power': float(np.sum(power))
         }
 
-        reward = -np.sum(data_rate_constraint) + EE - 5*self.step_function(total_daya-self.p_max)
+        #reward = -np.sum(data_rate_constraint) + EE - 5*self.step_function(total_daya-self.p_max)
         obs = np.concatenate([self.norm(next_channel_gain).ravel(),self.norm(next_intr).ravel(),self.norm(power)])
         return obs.astype(np.float32), float(reward), dw,False, info
     def norm(self,x):
@@ -174,35 +154,29 @@ class GameState:
 
         # Simpan posisi [controller, sensor] ke self.positions untuk dipakai jika perlu
         return cdist(gwLoc, dvLoc)
-    #def generate_channel_gain(self, distance):
-    #    channel_gain = np.zeros((self.nodes, self.nodes))
-    #    for i in range(self.nodes):
-    #        for j in range(self.nodes):
-    #            if i != j:
-                    #distance = np.linalg.norm(self.positions[i] - self.positions[j]) + 1e-6  # avoid zero
-    #                path_loss_dB = 128.1 + 37.6 * np.log10(distance[i][j] / 1000)  # example log-distance PL
-    #                path_loss_linear = 10 ** (-path_loss_dB / 10)
-    #                rayleigh = np.random.rayleigh(scale=1)
-    #                channel_gain[i][j] = path_loss_linear * rayleigh
-    #            else:
-    #                channel_gain[i][j] = np.random.rayleigh(scale=1)
-    #    return channel_gain
-    def generate_channel_gain(self,dist, sigma_shadow_dB=2.0, frek = 6):
+    def generate_channel_gain(self, dist, sigmaS=7.0, transmit_power=1.0, lambdA=0.05, plExponent=2.7):
         N = self.nodes
-        H = np.zeros((N, N))
+    
+        # Shadowing (log-normal in dB scale)
+        S = sigmaS * self.rng.standard_normal((N, N))
+        S_linear = 10 ** (S / 10)
+    
+        # Rayleigh fading (complex): use standard_normal instead of randn
+        real = self.rng.standard_normal((N, N))
+        imag = self.rng.standard_normal((N, N))
+        h = (1 / np.sqrt(2)) * (real + 1j * imag)
+    
+        # Compute channel gain (H_power)
+        H_power = (
+            transmit_power
+            * (4 * np.pi / lambdA) ** (-2)
+            * np.power(dist, -plExponent)
+            * S_linear
+            * np.abs(h) ** 2
+        )
+    
+        return H_power
 
-        for i in range(N):
-            for j in range(N):
-                #if i != j :
-                    PL_dB =  32.4  + 17.3* np.log10(dist[i, j]/1000)+20*np.log10(frek) #frek in GHz
-                    shadowing_dB = np.random.normal(0, sigma_shadow_dB)
-                    total_loss_dB = PL_dB + shadowing_dB
-
-                    rayleigh_fading = np.abs(np.random.rayleigh(scale=1.0)) ** 2
-                    H[i, j] = 10 ** (-total_loss_dB / 10) * rayleigh_fading
-                #else :
-                #    H[i, j] = np.abs(np.random.rayleigh(scale=1.0)) ** 2    
-        return H
     def interferensi(self, power,channel_gain):
         interferensi = np.zeros((self.nodes, self.nodes))
         for i in range(self.nodes):
