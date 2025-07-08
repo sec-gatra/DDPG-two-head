@@ -8,7 +8,7 @@ import torch.nn as nn
 import os, shutil
 import argparse
 from datetime import datetime
-from utils20 import str2bool,evaluate_policy
+from utils20 import str2bool,evaluate_policy, evaluate_policy_reward
 
 
 '''Hyperparameter Setting'''
