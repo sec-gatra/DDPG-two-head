@@ -259,10 +259,12 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             s_next, r, dw, tr, info = env.step(a, channel_gain, next_channel_gain)
             count_data_ok=info['data_rate_pass']
             data_rate=info['data_rate']
+            total_rate=info['total_rate']
 
             #step dari random 
             s_next1, r1, dw1, tr1, info1 = env.step(a_rand, channel_gain, next_channel_gain)
             data_rate_rand=info1['data_rate']
+            
             print(f'DDPG power : {a}, reward :{r}, total power {np.sum(a)}')
             print(f'random power : {a_rand}, reward :{r1}, total power {np.sum(a_rand)}')
         
@@ -305,6 +307,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
         'data_rate_lolos' : count_data_ok,
         'data_rate' : data_rate,
         'data_rate_rand' : data_rate_rand,
+        'total_rate' : total_rate,
     }
 
 #Just ignore this function~
