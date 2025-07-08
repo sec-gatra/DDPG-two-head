@@ -224,8 +224,8 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     total_power = 0
     total_power_rand=0
     # threshold constraint (contoh)
-    R_th = 0.074      # minimal data rate per UE [bit/s atau satuan yg kamu pakai]
-    P_th = 5  # maksimal total power [W atau satuan yg kamu pakai]
+    R_th = 0.15     # minimal data rate per UE [bit/s atau satuan yg kamu pakai]
+    P_th = 10  # maksimal total power [W atau satuan yg kamu pakai]
 
     # Counters untuk constraint
     count_data_ok  = 0
@@ -257,6 +257,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             next_loc         = env.generate_positions()
             next_channel_gain= env.generate_channel_gain(next_loc)
             s_next, r, dw, tr, info = env.step(a, channel_gain, next_channel_gain)
+            count_data_ok=info['data_rate_pass']
 
             #step dari random 
             s_next1, r1, dw1, tr1, info1 = env.step(a_rand, channel_gain, next_channel_gain)
