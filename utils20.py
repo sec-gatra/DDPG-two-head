@@ -260,8 +260,8 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
 
             #step dari random 
             s_next1, r1, dw1, tr1, info1 = env.step(a_rand, channel_gain, next_channel_gain)
-            print(f'DDPG power : {a}, reward :{r}')
-            print(f'random power : {a_rand}, reward :{r1}')
+            print(f'DDPG power : {a}, reward :{r}, total power {np.sum(a)}')
+            print(f'random power : {a_rand}, reward :{r1}, total power {np.sum(a_rand)}')
         
             # cek constraint power: total_power ≤ P_th
             if np.sum(a) <= P_th:
