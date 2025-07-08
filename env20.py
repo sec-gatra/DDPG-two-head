@@ -154,37 +154,6 @@ class GameState:
 
         # Simpan posisi [controller, sensor] ke self.positions untuk dipakai jika perlu
         return cdist(gwLoc, dvLoc)
-#    def generate_channel_gain(self, distance):
-#        channel_gain = np.zeros((self.nodes, self.nodes))
-#        for i in range(self.nodes):
-#            for j in range(self.nodes):
-#                if i != j:
-#                    #distance = np.linalg.norm(self.positions[i] - self.positions[j]) + 1e-6  # avoid zero
-#                    path_loss_dB = 128.1 + 37.6 * np.log10(distance[i][j] / 1000)  # example log-distance PL
-#                    path_loss_linear = 10 ** (-path_loss_dB / 10)
-#                    rayleigh = np.random.rayleigh(scale=1)
-#                    channel_gain[i][j] = path_loss_linear * rayleigh
-#                else:
-#                    channel_gain[i][j] = np.random.rayleigh(scale=1)
-#        return channel_gain
-    '''
-    def generate_channel_gain(self,dist, sigma_shadow_dB=2.0, frek = 6):
-        N = self.nodes
-        H = np.zeros((N, N))
-
-        for i in range(N):
-            for j in range(N):
-                #if i != j :
-                    PL_dB =  32.4  + 17.3* np.log10(dist[i, j]/1000)+20*np.log10(frek) #frek in GHz
-                    shadowing_dB = np.random.normal(0, sigma_shadow_dB)
-                    total_loss_dB = PL_dB + shadowing_dB
-
-                    rayleigh_fading = np.abs(np.random.rayleigh(scale=1.0)) ** 2
-                    H[i, j] = 10 ** (-total_loss_dB / 10) * rayleigh_fading
-                #else :
-                #    H[i, j] = np.abs(np.random.rayleigh(scale=1.0)) ** 2    
-        return H
-    '''
     def generate_channel_gain(self, dist, sigmaS=7.0, transmit_power=1.0, lambdA=0.05, plExponent=2.7):
         N = self.nodes
     
