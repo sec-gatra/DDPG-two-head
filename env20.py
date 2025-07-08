@@ -16,6 +16,7 @@ class GameState:
         self.action_space = nodes
         self.p = np.random.uniform(0, 3, size=self.nodes)
         self.rng = np.random.default_rng()
+        self.Rmin = 0.048
     def sample_valid_power(self):
         rand = np.random.rand(self.nodes)
         rand /= np.sum(rand)
@@ -54,10 +55,7 @@ class GameState:
         next_intr=self.interferensi(power,next_channel_gain)
         sinr=self.hitung_sinr(channel_gain,intr,power)
         data_rate=self.hitung_data_rate(sinr)
-        data_rate_constraint=[]
-        for i in range(self.nodes):
-            data_rate_constraint.append(5*self.step_function(0.074-data_rate[i]))
-            #data_rate_constraint.append(20*(data_rate[i]-4))
+        count_data_ok = sum(1 for dr in data_rate if dr >= self.Rmin)
         EE=self.hitung_efisiensi_energi(power,data_rate)
         
         total_daya=np.sum(power)
@@ -65,7 +63,7 @@ class GameState:
         
         # Condition 1: Budget exceeded
         fail_power = total_daya > self.p_max
-        rate_violation = np.sum(np.maximum(0.152 - data_rate, 0.0))
+        rate_violation = np.sum(np.maximum(self.Rmin - data_rate, 0.0))
         penalty_rate   = rate_violation
         #print(f'channel gain {channel_gain}')
         #print(f'data rate {data_rate}')
@@ -96,26 +94,7 @@ class GameState:
 
         info = {
         'EE': EE,
-        'data_rate1': data_rate[0],
-        'data_rate2': data_rate[1],
-        'data_rate3': data_rate[2],
-        'data_rate4': data_rate[3],
-        'data_rate5': data_rate[4],
-        'data_rate6': data_rate[5],
-        'data_rate7': data_rate[6],
-        'data_rate8': data_rate[7],
-        'data_rate9': data_rate[8],
-        'data_rate10': data_rate[9],
-        'data_rate11': data_rate[10],
-        'data_rate12': data_rate[11],
-        'data_rate13': data_rate[12],
-        'data_rate14': data_rate[13],
-        'data_rate15': data_rate[14],
-        'data_rate16': data_rate[15],
-        'data_rate17': data_rate[16],
-        'data_rate18': data_rate[17],
-        'data_rate19': data_rate[18],
-        'data_rate20': data_rate[19],
+        'data_rate_pass' : count_data_ok,
         'total_power': float(np.sum(power))
         }
 
