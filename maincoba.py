@@ -389,9 +389,8 @@ def main():
                             
 
                         
-                    '''  
 
-                    print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, data rate : {result["pct_data_ok"]}')
+                    #print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, data rate : {result["pct_data_ok"]}')
 
 
                 '''save model'''
