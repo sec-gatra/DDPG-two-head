@@ -60,21 +60,11 @@ def main():
     sepertiga_eps=total_episode//3
     EE_DDPG=[] #buat cdf
     EE_RAND=[] #buat_cdf
-    RATE_SUCCESS=[]
-    RATE_SUCCESS_RAND=[]
     POWER_DDPG = []
     POWER_RAND = []
-    ALL_DATARATES_NODES = [[] for _ in range(env.nodes)]  # List terpisah untuk setiap node
     ALL_DATARATES =[]
     ALL_DATARATES_RAND =[]
-    data_rate_1 =[]
-    data_rate_4 =[]
-    data_rate_7 =[]
-    data_rate_10 =[]
-    data_rate_14 =[]
-    data_rate_17 =[]
-    data_rate_20 =[]
-    
+
     
     # Seed Everything
     env_seed = opt.seed
@@ -116,20 +106,10 @@ def main():
                             state_eval = np.array(state_eval, dtype=np.float32)
                             result1 = evaluate_policy(channel_gain_eval,state_eval,eval_env, agent, turns=1)
                             for node_id in range(1, env.nodes+1):
-                                ALL_DATARATES_NODES[node_id - 1].append(result1[f'data_rate_{node_id}'])
                                 ALL_DATARATES.append(result1[f'data_rate_{node_id}'])
                                 ALL_DATARATES_RAND.append(result1[f'data_rate_rand{node_id}'])
-                            #print(result1['avg_EE'])
-                            #print(result1['avg_EE_rand'])
-                            #print(f'channel gain : {channel_gain_eval}')
-                            #print(f'power  : {result1["action"]}')
-                            #print(f'data rate : {result1["data_rate"]}')
-                            #print(f'EE: {result1["avg_EE"]}')
-                            CHANNEL_GAINS.append(channel_gain_eval.copy()) 
                             EE_DDPG.append(result1['avg_EE'])
                             EE_RAND.append(result1['avg_EE_rand'])
-                            RATE_SUCCESS.append(result1['pct_data_ok'])
-                            RATE_SUCCESS_RAND.append(result1['pct_data_ok_rand'])
                             POWER_DDPG.append(result1['avg_power'])
                             POWER_RAND.append(result1['avg_power_rand'])
 
@@ -139,11 +119,10 @@ def main():
                             writer.add_scalar('energi efisiensi random', result1['avg_EE_rand'], global_step=st)
                             writer.add_scalar('total daya', result1['avg_power'], global_step=st)
                             writer.add_scalar('constraint daya', result1['pct_power_ok'], global_step=st)
-        np.save('channel_gains.npy', np.array(CHANNEL_GAINS))
+            
+        #np.save('channel_gains.npy', np.array(CHANNEL_GAINS))
         x_ddpg, y_ddpg = compute_cdf(EE_DDPG)
         x_rand, y_rand = compute_cdf(EE_RAND)
-        x_rate, y_rate = compute_cdf(RATE_SUCCESS)
-        x_rate_rand, y_rate_rand = compute_cdf(RATE_SUCCESS_RAND)
         x_p, y_p = compute_cdf(POWER_DDPG)
         x_p_rand, y_p_rand = compute_cdf(POWER_RAND)
         
@@ -176,20 +155,6 @@ def main():
             writer.add_figure('CDF Energi Efisiensi', fig, global_step=st)
             plt.close(fig)
 
-        # 2) Plot CDF Data Rate Success
-        fig2, ax2 = plt.subplots()
-        ax2.plot(x_rate, y_rate, label='DDPG')
-        ax2.plot(x_rate_rand, y_rate_rand, label='Random')
-        ax2.set_xlabel('Persentase UE ≥ R_th (%)')
-        ax2.set_ylabel('CDF')
-        ax2.set_title('CDF Success Rate Data Rate')
-        ax2.legend()
-        ax2.grid(True)
-
-        if opt.write:
-            writer.add_figure('CDF Data Rate Success', fig2, global_step=st)
-            plt.close(fig2)
-
         # 3) Plot CDF power
         fig3, ax3 = plt.subplots()
         ax3.plot(x_p, y_p, label='Power DDPG')
@@ -204,28 +169,8 @@ def main():
         if opt.write:
             writer.add_figure('CDF Power', fig3, global_step=st)
             plt.close(fig3)
-        # 4) Plot CDF Data Rate per Node
-        fig4, ax4 = plt.subplots(figsize=(10, 6))
-        for idx, node_data in enumerate(ALL_DATARATES_NODES, 1):
-            x, y = compute_cdf(node_data)
-            ax4.plot(x, y, label=f'Node {idx}')
-
-        # Garis vertikal untuk R_min
-        R_min = 0.152
-        ax4.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
-
-        ax4.set_xlabel('Data Rate')
-        ax4.set_ylabel('CDF')
-        ax4.set_title('CDF of Data Rate per Node')
-        ax4.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize='small', ncol=2)
-        ax4.grid(True)
-        plt.tight_layout()
-        fig4.savefig("cdf_node_rate.png", dpi=300)
-
-        if opt.write:
-            writer.add_figure('CDF Data Rate per Node', fig4, global_step=st)
-            plt.close(fig4)
         # 5) Plot CDF Data Rate sistem
+        R_min = 0.048
         x_dr, y_dr = compute_cdf(ALL_DATARATES)
         x_dr_rand, y_dr_rand = compute_cdf(ALL_DATARATES_RAND)
         fig5, ax5 = plt.subplots()
@@ -263,11 +208,6 @@ def main():
         df = pd.DataFrame({
             'EE_DDPG': EE_DDPG,
             'EE_RAND': EE_RAND,
-            #'data_rate_1' :data_rate_1,
-            #'data_rate_4' :data_rate_4,
-            #'data_rate_7' :data_rate_7,
-            #'data_rate_10' :data_rate_10,
-            #'ALL_DATARATES' : ALL_DATARATES,
             'POWER_DDPG': POWER_DDPG,
             'POWER_RAND': POWER_RAND,
         })
@@ -284,20 +224,13 @@ def main():
     else:
         total_steps = 0
         lr_steps = 0
-        save=[]
         save2=[]
-        ee=[]
-        datret=[]
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
             lr_steps+=1
             if lr_steps==sepertiga_eps :
                 opt.a_lr=0.3 * opt.a_lr
                 opt.c_lr=0.3 * opt.c_lr
-                #opt.noise=opt.noise-0.1
                 lr_steps=0
-            #if total_steps >= 198000 :
-            #    opt.a_lr=0
-            #    opt.c_lr=0
             loc= env.generate_positions() #lokasi untuk s_t
             channel_gain=env.generate_channel_gain(loc) #channel gain untuk s_t
             s,info= env.reset(channel_gain, seed=env_seed)  # Do not use opt.seed directly, or it can overfit to opt.seed
@@ -306,15 +239,9 @@ def main():
             langkah = 0
             '''Interact & trian'''
             while not done: 
-                #print(total_steps)
                 langkah +=1
                 if total_steps <= opt.random_steps: #aslinya < aja, ide pengubahan ini tuh supaya selec action di train dulu.
                     a = env.sample_valid_power2()
-                    #print(np.sum(a))
-                    #print(np.sum(env.sample_valid_power()))
-                    #a = env.p
-                    #print(a)
-                    #print(total_steps)
                 else: 
                     a = agent.select_action(s, deterministic=False)
                 next_loc= env.generate_positions() #lokasi untuk s_t
@@ -322,15 +249,8 @@ def main():
                 s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
                 writer.add_scalar("Reward iterasi", r, total_steps)
                 if total_steps > opt.random_steps:
-                    #if total_steps % 500 == 0 :
-                    #    print(f'EE : {info["EE"]} dan Data Rate : {info["data_rate"]}, action : {a}')
                     if info['EE'] >= 20 and info['data_rate_pass']>=0.8*env.nodes :
-                        
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
-                        save.append(int(total_steps))
-                        ee.append(info['EE'])
-                        datret.append(info['data_rate_pass'])
-
                 loc= env.generate_positions()
                 channel_gain=env.generate_channel_gain(loc)
                 if langkah == iterasi :
