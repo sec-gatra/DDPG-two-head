@@ -291,7 +291,7 @@ def main():
                         #ee.append(info['EE'])
                         #datret.append(info['data_rate_pass'])
                     writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
-                    writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
+                    #writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
                     writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
                     if total_steps == opt.Max_train_steps :
                         for i in range(60000):
