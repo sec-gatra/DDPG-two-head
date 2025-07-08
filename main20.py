@@ -118,7 +118,6 @@ def main():
                             writer.add_scalar('energi efisiensi', result1['avg_EE'], global_step=st)
                             writer.add_scalar('energi efisiensi random', result1['avg_EE_rand'], global_step=st)
                             writer.add_scalar('total daya', result1['avg_power'], global_step=st)
-                            writer.add_scalar('constraint daya', result1['pct_power_ok'], global_step=st)
             
         #np.save('channel_gains.npy', np.array(CHANNEL_GAINS))
         x_ddpg, y_ddpg = compute_cdf(EE_DDPG)
