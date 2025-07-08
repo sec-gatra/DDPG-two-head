@@ -379,7 +379,7 @@ def main():
                     writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
                     if total_steps == opt.Max_train_steps :
                         for i in range(60000):
-                            if i % 2000 == 0
+                            if i % 2000 == 0:
                                 loc_extend= env.generate_positions() #lokasi untuk s_t
                                 channel_gain_extend=env.generate_channel_gain(loc_extend) #channel gain untuk s_t
                                 state_extend,inf=eval_env.reset(channel_gain_extend)
