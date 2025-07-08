@@ -9,7 +9,7 @@ class GameState:
         self.p_max = p_max
         self.gamma = 0.01
         self.beta = 1
-        self.noise_power = 0.01
+        self.noise_power = 2e-10
         self.area_size = area_size
         self.positions = self.generate_positions()
         self.observation_space = 2*nodes * nodes + nodes  # interferensi, channel gain, power
