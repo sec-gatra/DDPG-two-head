@@ -61,6 +61,7 @@ class GameState:
         EE=self.hitung_efisiensi_energi(power,data_rate)
         
         total_daya=np.sum(power)
+        total_rate  = np.sum(data_rate)
         
         # Condition 1: Budget exceeded
         fail_power = total_daya > self.p_max
