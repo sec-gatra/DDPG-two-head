@@ -298,6 +298,9 @@ def main():
                 opt.c_lr=0.3 * opt.c_lr
                 opt.noise=opt.noise-0.1
                 lr_steps=0
+            if total_steps >= 198000 :
+                opt.a_lr=0
+                opt.c_lr=0
             loc= env.generate_positions() #lokasi untuk s_t
             channel_gain=env.generate_channel_gain(loc) #channel gain untuk s_t
             s,info= env.reset(channel_gain, seed=env_seed)  # Do not use opt.seed directly, or it can overfit to opt.seed
