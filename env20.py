@@ -19,6 +19,11 @@ class GameState:
         rand = np.random.rand(self.nodes)
         rand /= np.sum(rand)
         return rand * self.p_max
+     def sample_valid_power2(self):
+        rand = np.random.rand(self.nodes)
+        rand /= np.sum(rand)  # jadi distribusi
+        scale = np.random.uniform(0.0, 1.0)  # skala acak antara 0 dan 1
+        return rand * (self.p_max) * scale
 
     def reset(self,gain,*, seed: Optional[int] = None, options: Optional[dict] = None):
         power = self.sample_valid_power()
@@ -58,6 +63,27 @@ class GameState:
         
         # Condition 1: Budget exceeded
         fail_power = total_daya > self.p_max
+        rate_violation = np.sum(np.maximum(0.152 - data_rate, 0.0))
+        penalty_rate   = rate_violation
+        #print(f'channel gain {channel_gain}')
+        #print(f'data rate {data_rate}')
+        #print(f'EE {EE}')
+        # Parameter dinamis
+
+
+        # 2) Power violation: only when total_power > p_max
+        power_violation = max(0.0, total_daya - self.p_max)
+        penalty_power   = 0.1 * power_violation
+        k0 = 10           # Base penalty rate weight
+        alpha = 1        # Semakin tinggi EE, semakin berat penalty rate
+        beta = 0.5        # Penalti untuk total daya
+        gammas = 1         # Penguat untuk sum-rate
+        
+        # Koefisien penalty rate tergantung EE
+        k_dynamic = k0 + alpha * EE
+        #fairness_penalty = np.std(data_rate)
+        # Reward formula dinamis
+        reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
 
         # Condition 2: Any data rate below threshold
         #min_rate = 0.5
@@ -88,20 +114,10 @@ class GameState:
         'data_rate18': data_rate[17],
         'data_rate19': data_rate[18],
         'data_rate20': data_rate[19],
-        #'data_rate21': data_rate[20],
-        #'data_rate22': data_rate[21],
-        #'data_rate23': data_rate[22],
-        #'data_rate24': data_rate[23],
-        #'data_rate25': data_rate[24],
-        #'data_rate26': data_rate[25],
-        #'data_rate27': data_rate[26],
-        #'data_rate28': data_rate[27],
-        #'data_rate29': data_rate[28],
-        #'data_rate30': data_rate[29],
         'total_power': float(np.sum(power))
         }
 
-        reward = -np.sum(data_rate_constraint) + EE - 5*self.step_function(total_daya-self.p_max)
+        #reward = -np.sum(data_rate_constraint) + EE - 5*self.step_function(total_daya-self.p_max)
         obs = np.concatenate([self.norm(next_channel_gain).ravel(),self.norm(next_intr).ravel(),self.norm(power)])
         return obs.astype(np.float32), float(reward), dw,False, info
     def norm(self,x):
@@ -170,6 +186,7 @@ class GameState:
 #                else:
 #                    channel_gain[i][j] = np.random.rayleigh(scale=1)
 #        return channel_gain
+    '''
     def generate_channel_gain(self,dist, sigma_shadow_dB=2.0, frek = 6):
         N = self.nodes
         H = np.zeros((N, N))
@@ -186,6 +203,30 @@ class GameState:
                 #else :
                 #    H[i, j] = np.abs(np.random.rayleigh(scale=1.0)) ** 2    
         return H
+    '''
+    def generate_channel_gain(self, dist, sigmaS=7.0, transmit_power=1.0, lambdA=0.05, plExponent=2.7):
+        N = self.nodes
+    
+        # Shadowing (log-normal in dB scale)
+        S = sigmaS * self.rng.standard_normal((N, N))
+        S_linear = 10 ** (S / 10)
+    
+        # Rayleigh fading (complex): use standard_normal instead of randn
+        real = self.rng.standard_normal((N, N))
+        imag = self.rng.standard_normal((N, N))
+        h = (1 / np.sqrt(2)) * (real + 1j * imag)
+    
+        # Compute channel gain (H_power)
+        H_power = (
+            transmit_power
+            * (4 * np.pi / lambdA) ** (-2)
+            * np.power(dist, -plExponent)
+            * S_linear
+            * np.abs(h) ** 2
+        )
+    
+        return H_power
+
     def interferensi(self, power,channel_gain):
         interferensi = np.zeros((self.nodes, self.nodes))
         for i in range(self.nodes):
