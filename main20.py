@@ -294,6 +294,7 @@ def main():
                     writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
                     #writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
                     writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
+                    '''
                     if total_steps == opt.Max_train_steps :
                         for i in range(60000):
                             if i % 2000 == 0:
@@ -303,6 +304,7 @@ def main():
                                 state_extend = np.array(state_extend, dtype=np.float32)
                                 result_reward2 = evaluate_policy_reward(channel_gain_extend,state_extend,eval_env, agent, turns=3)
                                 writer.add_scalar('reward training ddpg', result_reward2, global_step=total_steps+i)
+                    '''
                             
 
                         
@@ -322,6 +324,7 @@ def main():
         print(EE_DDPG)
         print(EE_RAND)
         print("The end")
+        print(save2)
 
 #%load_ext tensorboard
 #%tensorboard --logdir runs
