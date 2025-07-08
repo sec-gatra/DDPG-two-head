@@ -97,7 +97,7 @@ def main():
     if opt.render:
         st=0
         #channel_gains_from_csv1 = np.load('channel_gains_from_csv.npy', allow_pickle=True)
-        for i in range(len(5000)):
+        for i in range(15000):
                             st+=1
                             loc_eval= env.generate_positions() #lokasi untuk s_t
                             #channel_gain_eval = channel_gains_from_csv1[i]
