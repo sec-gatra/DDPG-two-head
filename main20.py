@@ -319,8 +319,8 @@ def main():
                 channel_gain=next_channel_gain
 
 # Simpan ke Excel
-        df.to_excel(f'energi_efisiensi.xlsx', index=False)
-        df1.to_excel(f'all_data_rate.xlsx', index=False)
+        #df.to_excel(f'energi_efisiensi.xlsx', index=False)
+        #df1.to_excel(f'all_data_rate.xlsx', index=False)
         print(EE_DDPG)
         print(EE_RAND)
         print("The end")
