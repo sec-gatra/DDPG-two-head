@@ -75,7 +75,7 @@ class GameState:
         power_violation = max(0.0, total_daya - self.p_max)
         penalty_power   = 0.1 * power_violation
         k0 = 10           # Base penalty rate weight
-        alpha = 1        # Semakin tinggi EE, semakin berat penalty rate
+        alpha = 0.8        # Semakin tinggi EE, semakin berat penalty rate
         beta = 0.5        # Penalti untuk total daya
         gammas = 1         # Penguat untuk sum-rate
         
