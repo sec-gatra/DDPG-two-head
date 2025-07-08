@@ -105,9 +105,8 @@ def main():
                             state_eval,inf=eval_env.reset(channel_gain_eval)
                             state_eval = np.array(state_eval, dtype=np.float32)
                             result1 = evaluate_policy(channel_gain_eval,state_eval,eval_env, agent, turns=1)
-                            for node_id in range(1, env.nodes+1):
-                                ALL_DATARATES.append(result1[f'data_rate_{node_id}'])
-                                ALL_DATARATES_RAND.append(result1[f'data_rate_rand{node_id}'])
+                            ALL_DATARATES.extend(result1['data_rate'])
+                            ALL_DATARATES_RAND.extend(result1['data_rate_rand'])
                             EE_DDPG.append(result1['avg_EE'])
                             EE_RAND.append(result1['avg_EE_rand'])
                             POWER_DDPG.append(result1['avg_power'])
