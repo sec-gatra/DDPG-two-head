@@ -27,7 +27,7 @@ parser.add_argument('--Loadmodel', type=str2bool, default=False, help='Load pret
 parser.add_argument('--ModelIdex', type=int, default=100, help='which model to load')
 
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--Max_train_steps', type=int, default = 300000, help='Max training steps') #aslinya 5e6
+parser.add_argument('--Max_train_steps', type=int, default = 198000, help='Max training steps') #aslinya 5e6
 parser.add_argument('--save_interval', type=int, default=2000, help='Model saving interval, in steps.') #aslinya 1e5
 parser.add_argument('--eval_interval', type=int, default=2000, help='Model evaluating interval, in steps.') #aslinya 2e3
 
@@ -298,9 +298,9 @@ def main():
                 opt.c_lr=0.3 * opt.c_lr
                 opt.noise=opt.noise-0.1
                 lr_steps=0
-            if total_steps >= 198000 :
-                opt.a_lr=0
-                opt.c_lr=0
+            #if total_steps >= 198000 :
+            #    opt.a_lr=0
+            #    opt.c_lr=0
             loc= env.generate_positions() #lokasi untuk s_t
             channel_gain=env.generate_channel_gain(loc) #channel gain untuk s_t
             s,info= env.reset(channel_gain, seed=env_seed)  # Do not use opt.seed directly, or it can overfit to opt.seed
@@ -377,38 +377,17 @@ def main():
                     writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
                     writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
                     writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
-                    '''
-                    if total_steps == opt.Max_train_steps:
-                        for i in range(5000):
-                            loc_eval= env.generate_positions() #lokasi untuk s_t
-                            channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
-                            state_eval,inf=eval_env.reset(channel_gain_eval)
-                            state_eval = np.array(state_eval, dtype=np.float32)
-                            result1 = evaluate_policy(channel_gain_eval,state_eval,eval_env, agent, turns=1)
-                            data_rate_1.append(result1['data_rate_1'])
-                            data_rate_4.append(result1['data_rate_4'])
-                            data_rate_7.append(result1['data_rate_7'])
-                            data_rate_10.append(result1['data_rate_10'])
-                            for node_id in range(1, env.nodes+1):
-                                ALL_DATARATES_NODES[node_id - 1].append(result1[f'data_rate_{node_id}'])
-                                ALL_DATARATES.append(result1[f'data_rate_{node_id}'])
-                                ALL_DATARATES_RAND.append(result1[f'data_rate_rand{node_id}'])
-                            #print(result1['avg_EE'])
-                            #print(result1['avg_EE_rand'])
-                            EE_DDPG.append(result1['avg_EE'])
-                            EE_RAND.append(result1['avg_EE_rand'])
-                            RATE_SUCCESS.append(result1['pct_data_ok'])
-                            RATE_SUCCESS_RAND.append(result1['pct_data_ok_rand'])
-                            POWER_DDPG.append(result1['avg_power'])
-                            POWER_RAND.append(result1['avg_power_rand'])
-                            if opt.write: 
-                                writer.add_scalar('ep_r', result1['avg_score'], global_step=st)
-                                writer.add_scalar('energi efisiensi', result1['avg_EE'], global_step=st)
-                                writer.add_scalar('energi efisiensi random', result1['avg_EE_rand'], global_step=st)
-                                writer.add_scalar('total daya', result1['avg_power'], global_step=st)
-                                writer.add_scalar('constraint daya', result1['pct_power_ok'], global_step=st)
-                            #print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(st)}')
-                            st+=1
+                    if total_steps == opt.Max_train_steps :
+                        for i in range(20000):
+                            if i % 2000 == 0
+                                loc_extend= env.generate_positions() #lokasi untuk s_t
+                                channel_gain_extend=env.generate_channel_gain(loc_extend) #channel gain untuk s_t
+                                state_extend,inf=eval_env.reset(channel_gain_extend)
+                                state_extend = np.array(state_extend, dtype=np.float32)
+                                result_reward2 = evaluate_policy_reward(channel_gain_extend,state_extend,eval_env, agent, turns=3)
+                                writer.add_scalar('reward training ddpg', result_reward2, global_step=total_steps+i)
+                            
+
                         
                     '''  
 
