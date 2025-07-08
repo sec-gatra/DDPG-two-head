@@ -284,6 +284,7 @@ def main():
                     state_eval = np.array(state_eval, dtype=np.float32)
                     result = evaluate_policy(channel_gain,state_eval,eval_env, agent, turns=1)
                     result_reward = evaluate_policy_reward(channel_gain,state_eval,eval_env, agent, turns=3)
+                    print(f'total rate : {result["total_rate"]}')
                     print(f'step : {total_steps}')
                     if result['avg_EE'] >= 30 and result['data_rate_lolos']>=0.8*env.nodes :
                         
