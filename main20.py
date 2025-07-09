@@ -295,7 +295,7 @@ def main():
                     result_reward = evaluate_policy_reward(channel_gain,state_eval,eval_env, agent, turns=3)
                     print(f'total rate : {result["total_rate"]}')
                     print(f'step : {total_steps}')
-                    print(f'rate lolos' : {result["data_rate_lolos"]})
+                    print(f'rate lolos : {result["data_rate_lolos"]}')
                     if result['avg_EE'] >= 30 and result['data_rate_lolos']>=0.8*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
