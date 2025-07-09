@@ -96,8 +96,9 @@ def main():
 
     if opt.render:
         st=0
+        rate_lolos=[]
         #channel_gains_from_csv1 = np.load('channel_gains_from_csv.npy', allow_pickle=True)
-        for i in range(15000):
+        for i in range(3000):
                             st+=1
                             loc_eval= env.generate_positions() #lokasi untuk s_t
                             #channel_gain_eval = channel_gains_from_csv1[i]
@@ -105,6 +106,7 @@ def main():
                             state_eval,inf=eval_env.reset(channel_gain_eval)
                             state_eval = np.array(state_eval, dtype=np.float32)
                             result1 = evaluate_policy(channel_gain_eval,state_eval,eval_env, agent, turns=1)
+                            rate_lolos.append(result1['data_rate_lolos'])
                             ALL_DATARATES.extend(result1['data_rate'])
                             ALL_DATARATES_RAND.extend(result1['data_rate_rand'])
                             EE_DDPG.append(result1['avg_EE'])
@@ -117,6 +119,7 @@ def main():
                             writer.add_scalar('energi efisiensi', result1['avg_EE'], global_step=st)
                             writer.add_scalar('energi efisiensi random', result1['avg_EE_rand'], global_step=st)
                             writer.add_scalar('total daya', result1['avg_power'], global_step=st)
+                            writer.add_scalar('reward lolos', result1['data_rate_lolos'], global_step=st)
             
         #np.save('channel_gains.npy', np.array(CHANNEL_GAINS))
         x_ddpg, y_ddpg = compute_cdf(EE_DDPG)
@@ -202,6 +205,12 @@ def main():
             writer.add_figure('CDF Data Rate Sistem', fig5, global_step=st)
             plt.close(fig5)
 
+        #data rate akurasi 
+        total_rate_lolos = np.sum(rate_lolos)
+        total_node = env.nodes * 3000
+        accuracy = total_rate_lolos * 100 / total_node
+        print(f'accuracy data rate {accuracy}, maks node lolos per iterasi : {np.max(rate_lolos)}, min node lolos per iterasi : {np.min(rate_lolos)}')
+
         # Buat dataframe
         df = pd.DataFrame({
             'EE_DDPG': EE_DDPG,
@@ -286,6 +295,7 @@ def main():
                     result_reward = evaluate_policy_reward(channel_gain,state_eval,eval_env, agent, turns=3)
                     print(f'total rate : {result["total_rate"]}')
                     print(f'step : {total_steps}')
+                    print(f'rate lolos' : {result["data_rate_lolos"]})
                     if result['avg_EE'] >= 30 and result['data_rate_lolos']>=0.8*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
