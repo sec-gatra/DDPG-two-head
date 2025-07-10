@@ -16,7 +16,7 @@ class GameState:
         self.action_space = nodes
         self.p = np.random.uniform(0, 3, size=self.nodes)
         self.rng = np.random.default_rng()
-        self.Rmin = 0.15
+        self.Rmin = 0.074
     def sample_valid_power(self):
         rand = np.random.rand(self.nodes)
         rand /= np.sum(rand)
@@ -25,7 +25,7 @@ class GameState:
         rand = np.random.rand(self.nodes)
         rand /= np.sum(rand)  # jadi distribusi
         scale = np.random.uniform(0.0, 1.0)  # skala acak antara 0 dan 1
-        return rand * (1) * scale
+        return rand * (self.p_max) * scale
 
     def reset(self,gain,*, seed: Optional[int] = None, options: Optional[dict] = None):
         power = self.sample_valid_power()
@@ -84,7 +84,7 @@ class GameState:
         #fairness_penalty = np.std(data_rate)
         # Reward formula dinamis
  
-        reward = 10*np.log(EE) - rate_violation - power_violation
+        reward = 50*np.log(EE) - 5rate_violation - power_violation
 
         # Condition 2: Any data rate below threshold
         #min_rate = 0.5
