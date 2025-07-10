@@ -224,7 +224,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     total_power = 0
     total_power_rand=0
     # threshold constraint (contoh)
-    R_th = 0.074     # minimal data rate per UE [bit/s atau satuan yg kamu pakai]
+    R_th = 0.152    # minimal data rate per UE [bit/s atau satuan yg kamu pakai]
     P_th = 10  # maksimal total power [W atau satuan yg kamu pakai]
 
     # Counters untuk constraint
