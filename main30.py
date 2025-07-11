@@ -241,7 +241,7 @@ def main():
                 lr_steps=0
             loc= env.generate_positions() #lokasi untuk s_t
             channel_gain=env.generate_channel_gain(loc) #channel gain untuk s_t
-            s,info= env.reset(channel_gain, seed=env_seed)  # Do not use opt.seed directly, or it can overfit to opt.seed
+            s,a_prev,info= env.reset(channel_gain, seed=env_seed)  # Do not use opt.seed directly, or it can overfit to opt.seed
             env_seed += 1
             done = False
             langkah = 0
@@ -254,7 +254,7 @@ def main():
                     a = agent.select_action(s, deterministic=False)
                 next_loc= env.generate_positions() #lokasi untuk s_t
                 next_channel_gain=env.generate_channel_gain(next_loc) #channel gain untuk s_t
-                s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
+                s_next, r, dw, tr, info= env.step(a,a_prev,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
                 writer.add_scalar("Reward iterasi", r, total_steps)
                 if total_steps > opt.random_steps:
                     if info['EE'] >= 20 and info['data_rate_pass']>=0.8*env.nodes :
@@ -269,6 +269,7 @@ def main():
 
                 agent.replay_buffer.add(np.array(s, dtype=np.float32), a, r, np.array(s_next, dtype=np.float32), dw)
                 s = s_next
+                a_prev = a
                 channel_gain=next_channel_gain
                 total_steps += 1
 
