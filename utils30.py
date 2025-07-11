@@ -25,54 +25,53 @@ class Actor(nn.Module):
             nn.Linear(net_width//2, net_width//4),
             nn.ReLU(),
             nn.LayerNorm(net_width//4),
+            nn.Linear(net_width//4, net_width//8),          # NEW LAYER 💥
+            nn.ReLU(),
+            nn.LayerNorm(net_width//8),
         )
         # two heads
-        self.dist_head  = nn.Linear(net_width//4, action_dim)  # for softmax
-        self.scale_head = nn.Linear(net_width//4, 1)           # for budget
+        self.dist_head  = nn.Linear(net_width//8, action_dim)  # adjusted
+        self.scale_head = nn.Linear(net_width//8, 1)           # adjusted
 
         self.maxaction = maxaction
 
     def forward(self, state):
-        x = self.net(state)                   # [B, hidden]
-        logits = self.dist_head(x)            # [B, action_dim]
-        dist   = F.softmax(logits, dim=-1)    # sum to 1
+        x = self.net(state)
+        logits = self.dist_head(x)
+        dist   = F.softmax(logits, dim=-1)
 
-        scale  = torch.sigmoid(self.scale_head(x)).squeeze(-1)  
-        # scale in (0,1), shape [B]
-
-        total_power = scale * self.maxaction  # shape [B]
-        # expand total_power to [B,action_dim] so we can multiply
+        scale  = torch.sigmoid(self.scale_head(x)).squeeze(-1)
+        total_power = scale * self.maxaction
         return dist * total_power.unsqueeze(-1)
+
 
 
 class Q_Critic(nn.Module):
     def __init__(self, state_dim, action_dim, net_width=1024):
         super().__init__()
-        # pertama‐tama embed state saja
         self.l1 = nn.Linear(state_dim, net_width)
         self.ln1 = nn.LayerNorm(net_width)
 
-        # setelah itu concat action, lalu dua layer lagi
         self.l2 = nn.Linear(net_width + action_dim, net_width//2)
         self.ln2 = nn.LayerNorm(net_width//2)
 
         self.l3 = nn.Linear(net_width//2, net_width//4)
         self.ln3 = nn.LayerNorm(net_width//4)
 
-        # output Q‐value scalar
-        self.l4 = nn.Linear(net_width//4, 1)
+        self.l4 = nn.Linear(net_width//4, net_width//8)         # NEW LAYER 💥
+        self.ln4 = nn.LayerNorm(net_width//8)
+
+        self.l5 = nn.Linear(net_width//8, 1)  # final Q-value
 
     def forward(self, state, action):
-        """
-        state:  Tensor [B, state_dim]
-        action: Tensor [B, action_dim]
-        """
-        x = F.relu(self.ln1(self.l1(state)))             # [B, net_width]
-        x = torch.cat([x, action], dim=-1)               # [B, net_width+action_dim]
-        x = F.relu(self.ln2(self.l2(x)))                 # [B, net_width//2]
-        x = F.relu(self.ln3(self.l3(x)))                 # [B, net_width//4]
-        q = self.l4(x)                                   # [B, 1]
+        x = F.relu(self.ln1(self.l1(state)))
+        x = torch.cat([x, action], dim=-1)
+        x = F.relu(self.ln2(self.l2(x)))
+        x = F.relu(self.ln3(self.l3(x)))
+        x = F.relu(self.ln4(self.l4(x)))                      # NEW LINE
+        q = self.l5(x)
         return q
+
 def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
     total_reward = 0
     for j in range(turns):
