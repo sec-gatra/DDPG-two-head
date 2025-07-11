@@ -104,7 +104,7 @@ def main():
                             #loc_eval= env.generate_positions() #lokasi untuk s_t
                             #channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
                             channel_gain_eval = channel_gains_from_csv1[i]
-                            state_eval,inf=eval_env.reset(channel_gain_eval)
+                            state_eval,a_prev,inf=eval_env.reset(channel_gain_eval)
                             state_eval = np.array(state_eval, dtype=np.float32)
                             result1 = evaluate_policy(channel_gain_eval,state_eval,eval_env, agent, turns=1)
                             rate_lolos.append(result1['data_rate_lolos'])
@@ -290,7 +290,7 @@ def main():
                 #if total_steps == opt.Max_train_steps:
                     #st=0
                     #for i in range(200):
-                    state_eval,inf=eval_env.reset(channel_gain)
+                    state_eval,a_prev,inf=eval_env.reset(channel_gain)
                     state_eval = np.array(state_eval, dtype=np.float32)
                     result = evaluate_policy(channel_gain,state_eval,eval_env, agent, turns=1)
                     result_reward = evaluate_policy_reward(channel_gain,state_eval,eval_env, agent, turns=3)
