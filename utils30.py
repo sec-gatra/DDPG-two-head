@@ -76,12 +76,14 @@ class Q_Critic(nn.Module):
 def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
     total_reward = 0
     for j in range(turns):
+         a_prev=env.sample_valid_power2()
         for i in range(200):
             # Take deterministic actions at test time
+           
             a = agent.select_action(state, deterministic=True)
             next_loc = env.generate_positions()
             next_channel_gain= env.generate_channel_gain(next_loc)
-            s_next, re, dw, tr, info = env.step(a, channel_gain, next_channel_gain)
+            s_next, re, dw, tr, info = env.step(a,a_prev, channel_gain, next_channel_gain)
             #if iterasi == max_iter :
             #    tr ==True
             done = (dw or tr)
@@ -90,6 +92,7 @@ def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
             total_reward += re
             #iterasi +=1
             #print(i)
+            a_prev=a
             state = s_next
             channel_gain = next_channel_gain
     return int(total_reward/3)
@@ -125,7 +128,8 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
         done = False
         MAX_STEPS = 1
         step_count = 0
-
+        a_prev=env.sample_valid_power2()
+        a_prev_rand=env.sample_valid_power2()
         while not done:
             step_count += 1
             total_steps += 1
@@ -137,12 +141,12 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             # generate next state
             next_loc         = env.generate_positions()
             next_channel_gain= env.generate_channel_gain(next_loc)
-            s_next, r, dw, tr, info = env.step(a, channel_gain, next_channel_gain)
+            s_next, r, dw, tr, info = env.step(a,a_prev, channel_gain, next_channel_gain)
             count_data_ok=info['data_rate_pass']
             data_rate=info['data_rate']
 
             #step dari random 
-            s_next1, r1, dw1, tr1, info1 = env.step(a_rand, channel_gain, next_channel_gain)
+            s_next1, r1, dw1, tr1, info1 = env.step(a_rand, a_prev_rand, channel_gain, next_channel_gain)
             print(f'DDPG power : {a}, reward :{r}, total power {np.sum(a)}')
             print(f'random power : {a_rand}, reward :{r1}, total power {np.sum(a_rand)}')
             data_rate_rand=info1['data_rate']
@@ -169,6 +173,8 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             done = (dw or tr)
             state = s_next
             channel_gain = next_channel_gain
+            a_prev=a
+            a_prev_rand=a_rand
 
     # hitung rata-rata metrik
     avg_score = total_scores / turns
