@@ -76,7 +76,7 @@ class Q_Critic(nn.Module):
 def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
     total_reward = 0
     for j in range(turns):
-         a_prev=env.sample_valid_power2()
+        a_prev=env.sample_valid_power2()
         for i in range(200):
             # Take deterministic actions at test time
            
