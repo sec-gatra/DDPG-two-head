@@ -12,7 +12,8 @@ class GameState:
         self.noise_power = 2e-10
         self.area_size = area_size
         self.positions = self.generate_positions()
-        self.observation_space = 2*nodes * nodes + nodes  # interferensi, channel gain, power
+        #self.observation_space = 2*nodes * nodes + nodes  # interferensi, channel gain, power
+        self.observation_space = nodes * nodes  
         self.action_space = nodes
         self.p = np.random.uniform(0, 3, size=self.nodes)
         self.rng = np.random.default_rng()
@@ -41,7 +42,8 @@ class GameState:
         intr_norm = self.norm(intr)
         p_norm=self.norm(power)
         
-        result_array = np.concatenate((np.array(gain_norm).flatten(), np.array(intr_norm).flatten(),np.array(p_norm)))
+        #result_array = np.concatenate((np.array(gain_norm).flatten(), np.array(intr_norm).flatten(),np.array(p_norm)))
+        result_array = np.concatenate((np.array(gain_norm).flatten()))
         return result_array ,{}
 
     def step_function(self,x):
@@ -101,7 +103,8 @@ class GameState:
         }
 
         #reward = -np.sum(data_rate_constraint) + EE - 5*self.step_function(total_daya-self.p_max)
-        obs = np.concatenate([self.norm(next_channel_gain).ravel(),self.norm(next_intr).ravel(),self.norm(power)])
+        #obs = np.concatenate([self.norm(next_channel_gain).ravel(),self.norm(next_intr).ravel(),self.norm(power)])
+        obs = np.concatenate([self.norm(next_channel_gain).ravel()])
         return obs.astype(np.float32), float(reward), dw,False, info
     def norm(self,x):
         x = np.maximum(x, 1e-10) # aslinya kagak ada
