@@ -187,7 +187,7 @@ class GameState:
         for i in range(self.nodes):
             for j in range(self.nodes):
                 if i != j:
-                    interferensi[i][j] = channel_gain[i][j] * power [i]
+                    interferensi[i][j] = float(channel_gain[i][j]) * float(power[i])
                 else:
                     interferensi[i][j] = 0
         return interferensi
