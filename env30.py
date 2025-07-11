@@ -104,7 +104,7 @@ class GameState:
 
         #reward = -np.sum(data_rate_constraint) + EE - 5*self.step_function(total_daya-self.p_max)
         #obs = np.concatenate([self.norm(next_channel_gain).ravel(),self.norm(next_intr).ravel(),self.norm(power)])
-        obs = ([self.norm(next_channel_gain).ravel()])
+        obs = (self.norm(next_channel_gain).ravel())
         return np.array(obs).astype(np.float32), float(reward), dw, False, info
     def norm(self,x):
         x = np.maximum(x, 1e-10) # aslinya kagak ada
