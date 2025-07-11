@@ -30,7 +30,7 @@ parser.add_argument('--net_width', type=int, default=1024, help='Hidden net widt
 parser.add_argument('--a_lr', type=float, default=5e-5, help='Learning rate of actor') # 2e-3
 parser.add_argument('--c_lr', type=float, default=3e-6, help='Learning rate of critic') # 1e-3
 parser.add_argument('--batch_size', type=int, default=128, help='batch_size of training')
-parser.add_argument('--random_steps', type=int, default=70000, help='random steps before trianing')
+parser.add_argument('--random_steps', type=int, default=50000, help='random steps before trianing')
 parser.add_argument('--noise', type=float, default=0.05, help='exploring noise') #aslinya 0.1
 opt = parser.parse_args()
 opt.dvc = torch.device(opt.dvc) # from str to torch.device
@@ -97,7 +97,7 @@ def main():
     if opt.render:
         st=0
         #channel_gains_from_csv1 = np.load('channel_gains_from_csv.npy', allow_pickle=True)
-        for i in range(len(5000)):
+        for i in range(len(3000)):
                             st+=1
                             loc_eval= env.generate_positions() #lokasi untuk s_t
                             #channel_gain_eval = channel_gains_from_csv1[i]
