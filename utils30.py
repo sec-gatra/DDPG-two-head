@@ -73,36 +73,6 @@ class Q_Critic(nn.Module):
         x = F.relu(self.ln3(self.l3(x)))                 # [B, net_width//4]
         q = self.l4(x)                                   # [B, 1]
         return q
-
-class Q_Critic(nn.Module):
-    def __init__(self, state_dim, action_dim, net_width=1024):
-        super().__init__()
-        # pertama‐tama embed state saja
-        self.l1 = nn.Linear(state_dim, net_width)
-        self.ln1 = nn.LayerNorm(net_width)
-
-        # setelah itu concat action, lalu dua layer lagi
-        self.l2 = nn.Linear(net_width + action_dim, net_width//2)
-        self.ln2 = nn.LayerNorm(net_width//2)
-
-        self.l3 = nn.Linear(net_width//2, net_width//4)
-        self.ln3 = nn.LayerNorm(net_width//4)
-
-        # output Q‐value scalar
-        self.l4 = nn.Linear(net_width//4, 1)
-
-    def forward(self, state, action):
-        """
-        state:  Tensor [B, state_dim]
-        action: Tensor [B, action_dim]
-        """
-        x = F.relu(self.ln1(self.l1(state)))             # [B, net_width]
-        x = torch.cat([x, action], dim=-1)               # [B, net_width+action_dim]
-        x = F.relu(self.ln2(self.l2(x)))                 # [B, net_width//2]
-        x = F.relu(self.ln3(self.l3(x)))                 # [B, net_width//4]
-        q = self.l4(x)                                   # [B, 1]
-        return q
-
 def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
     total_reward = 0
     for j in range(turns):
@@ -148,6 +118,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     count_rand=0
     jumlah_data_rate = 0
     jumlah_data_rate_rand=0
+    data_rate =[]
 
     for _ in range(turns):
         done = False
@@ -167,11 +138,13 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             next_channel_gain= env.generate_channel_gain(next_loc)
             s_next, r, dw, tr, info = env.step(a, channel_gain, next_channel_gain)
             count_data_ok=info['data_rate_pass']
+            data_rate=info['data_rate']
 
             #step dari random 
             s_next1, r1, dw1, tr1, info1 = env.step(a_rand, channel_gain, next_channel_gain)
             print(f'DDPG power : {a}, reward :{r}, total power {np.sum(a)}')
             print(f'random power : {a_rand}, reward :{r1}, total power {np.sum(a_rand)}')
+            
         
             # cek constraint power: total_power ≤ P_th
             if np.sum(a) <= P_th:
@@ -210,6 +183,8 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
         'avg_power':    avg_power,
         'avg_power_rand' : avg_power_rand,
         'data_rate_lolos' : count_data_ok,
+        'data_rate' : data_rate,
+        
     }
 
 #Just ignore this function~
