@@ -21,7 +21,7 @@ parser.add_argument('--Loadmodel', type=str2bool, default=False, help='Load pret
 parser.add_argument('--ModelIdex', type=int, default=100, help='which model to load')
 
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--Max_train_steps', type=int, default = 5, help='Max training steps') #aslinya 5e6
+parser.add_argument('--Max_train_steps', type=int, default = 3, help='Max training steps') #aslinya 5e6
 parser.add_argument('--save_interval', type=int, default=2500, help='Model saving interval, in steps.') #aslinya 1e5
 parser.add_argument('--eval_interval', type=int, default=2000, help='Model evaluating interval, in steps.') #aslinya 2e3
 
@@ -55,7 +55,7 @@ def main():
     #      f'max_a:{opt.max_action}  min_a:{env.action_space.low[0]}  max_e_steps:{env._max_episode_steps}')
 
     #variable tambahan 
-    iterasi = 200
+    iterasi = 1
     total_episode = -(-opt.Max_train_steps//iterasi)
     sepertiga_eps=total_episode//3
     EE_DDPG=[] #buat cdf
