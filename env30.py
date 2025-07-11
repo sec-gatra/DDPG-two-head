@@ -55,8 +55,8 @@ class GameState:
     def step(self,power,power_prev,channel_gain,next_channel_gain):
         intr=self.interferensi(power_prev,channel_gain)
         next_intr=self.interferensi(power,next_channel_gain)
-        print(f'interferensi now : {intr}')
-        print(f'interferensi next : {next_intr}')
+        print(f'power now : {power_prev}')
+        print(f'power next : {power}')
         sinr=self.hitung_sinr(channel_gain,intr,power)
         data_rate=self.hitung_data_rate(sinr)
         count_data_ok = sum(1 for dr in data_rate if dr >= self.Rmin)
