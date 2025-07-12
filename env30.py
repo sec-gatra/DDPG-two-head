@@ -12,7 +12,7 @@ class GameState:
         self.noise_power = 2e-10
         self.area_size = area_size
         self.positions = self.generate_positions()
-        self.observation_space = 2*nodes * nodes + nodes  # interferensi, channel gain, power
+        self.observation_space = 2*nodes * nodes + 2*nodes  # interferensi, channel gain, power, data_rate
         #self.observation_space = nodes * nodes  
         self.action_space = nodes
         self.p = np.random.uniform(0, 3, size=self.nodes)
@@ -35,14 +35,15 @@ class GameState:
         #gain= self.generate_channel_gain(loc)
         intr=self.interferensi(power,gain)
         #new_intr=self.interferensi_state(intr)
-        #ini_sinr=self.hitung_sinr(ini_gain,intr,power)
-        #ini_data_rate=self.hitung_data_rate(ini_sinr)
+        ini_sinr=self.hitung_sinr(gain,intr,power)
+        ini_data_rate=self.hitung_data_rate(ini_sinr)
         #ini_EE=self.hitung_efisiensi_energi(self.p,ini_data_rate)
         gain_norm=self.norm(gain)
         intr_norm = self.norm(intr)
         p_norm=self.norm(power)
+        data_rate_norm=self.norm(ini_date_rate)
         
-        result_array = np.concatenate((np.array(gain_norm).flatten(), np.array(intr_norm).flatten(),np.array(p_norm)))
+        result_array = np.concatenate((np.array(gain_norm).flatten(), np.array(intr_norm).flatten(),np.array(p_norm),np.array(data_rate_norm)))
         #result_array = (np.array(gain_norm).flatten())
         return result_array ,power,{}
 
@@ -105,7 +106,7 @@ class GameState:
         }
 
         #reward = -np.sum(data_rate_constraint) + EE - 5*self.step_function(total_daya-self.p_max)
-        obs = np.concatenate([self.norm(next_channel_gain).ravel(),self.norm(next_intr).ravel(),self.norm(power)])
+        obs = np.concatenate([self.norm(next_channel_gain).ravel(),self.norm(next_intr).ravel(),self.norm(power), self.norm(data_rate)])
         #obs = (self.norm(next_channel_gain).ravel())
         return np.array(obs).astype(np.float32), float(reward), dw, False, info
     def norm(self,x):
