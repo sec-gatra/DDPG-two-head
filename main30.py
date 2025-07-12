@@ -101,7 +101,7 @@ def main():
         for i in range((3000)):
         #for i in range(len(channel_gains_from_csv1)):
                             st+=1
-                            #loc_eval= env.generate_positions() #lokasi untuk s_t
+                            loc_eval= env.generate_positions() #lokasi untuk s_t
                             channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
                             #channel_gain_eval = channel_gains_from_csv1[i]
                             state_eval,a_prev,inf=eval_env.reset(channel_gain_eval)
