@@ -297,6 +297,7 @@ def main():
                     print(f'total_rate : {np.sum(result["data_rate"])}')
                     print(f'data rate lolos : {result["data_rate_lolos"]}')
                     print(f'rate violation : {result["rate_violation"]}')
+                    print(f'EE: {result["avg_EE"]}')
                     print(f'step : {total_steps}')
                     if result['avg_EE'] >= 30 and result['data_rate_lolos']>=0.8*env.nodes :
                         
