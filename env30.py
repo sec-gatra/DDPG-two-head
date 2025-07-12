@@ -41,7 +41,7 @@ class GameState:
         gain_norm=self.norm(gain)
         intr_norm = self.norm(intr)
         p_norm=self.norm(power)
-        data_rate_norm=self.norm(ini_date_rate)
+        data_rate_norm=self.norm(ini_data_rate)
         
         result_array = np.concatenate((np.array(gain_norm).flatten(), np.array(intr_norm).flatten(),np.array(p_norm),np.array(data_rate_norm)))
         #result_array = (np.array(gain_norm).flatten())
