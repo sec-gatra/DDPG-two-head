@@ -122,6 +122,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     jumlah_data_rate_rand=0
     data_rate =[]
     data_rate_rand =[]
+    rate_violation = 0
 
     for _ in range(turns):
         done = False
@@ -141,6 +142,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             next_loc         = env.generate_positions()
             next_channel_gain= env.generate_channel_gain(next_loc)
             s_next, r, dw, tr, info = env.step(a,a_prev, channel_gain, next_channel_gain)
+            rate_violation = info['rate_violation']
             count_data_ok=info['data_rate_pass']
             data_rate=info['data_rate']
 
@@ -192,6 +194,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
         'data_rate_lolos' : count_data_ok,
         'data_rate' : data_rate,
         'data_rate_rand' :data_rate_rand,
+        'rate_violation' : rate_violation,
         
     }
 
