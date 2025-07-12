@@ -296,6 +296,7 @@ def main():
                     result_reward = evaluate_policy_reward(channel_gain,state_eval,eval_env, agent, turns=3)
                     print(f'total_rate : {np.sum(result["data_rate"])}')
                     print(f'data rate lolos : {result["data_rate_lolos"]}')
+                    print(f'rate violation : {result["rate_violation"]}')
                     print(f'step : {total_steps}')
                     if result['avg_EE'] >= 30 and result['data_rate_lolos']>=0.8*env.nodes :
                         
