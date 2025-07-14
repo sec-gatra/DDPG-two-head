@@ -89,7 +89,7 @@ class GameState:
         #fairness_penalty = np.std(data_rate)
         # Reward formula dinamis
         #reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
-        reward = 30*np.log(EE) - 20*rate_violation - 10*np.sum(power)
+        reward = 10*np.log(EE) - 20*rate_violation - 10*np.sum(power)
 
         # Condition 2: Any data rate below threshold
         #min_rate = 0.5
