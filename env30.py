@@ -12,7 +12,7 @@ class GameState:
         self.noise_power = 2e-10
         self.area_size = area_size
         self.positions = self.generate_positions()
-        self.observation_space = 2*nodes * nodes  # interferensi, channel gain, power, data_rate
+        self.observation_space = 2*nodes * nodes + nodes # interferensi, channel gain, power, data_rate
         #self.observation_space = nodes * nodes  
         self.action_space = nodes
         self.p = np.random.uniform(0, 3, size=self.nodes)
