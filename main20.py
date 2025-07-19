@@ -172,18 +172,6 @@ def main():
         ax5.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
 
         # Tambahkan panah horizontal untuk menunjukkan gap di CDF 0.5
-        cdf_level = 0.5
-        x_ddpg_val = np.interp(cdf_level, y_dr, x_dr)
-        x_rand_val = np.interp(cdf_level, y_dr_rand, x_dr_rand)
-        gap_percent = 100 * (x_ddpg_val - x_rand_val) / x_rand_val
-
-        ax5.annotate(f"{gap_percent:.0f}%",
-                     xy=((x_ddpg_val + x_rand_val)/2, cdf_level),
-                     xytext=(x_rand_val, cdf_level + 0.05),
-                     arrowprops=dict(arrowstyle='<->', color='black'),
-                     ha='center', fontsize=11)
-        ax5.axhline(cdf_level, color='gray', linestyle=':', linewidth=1)
-
         ax5.set_xlabel('Data Rate')
         ax5.set_ylabel('CDF')
         ax5.set_title('CDF of Data Rate (All Nodes)')
