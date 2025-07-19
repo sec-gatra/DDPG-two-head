@@ -128,30 +128,18 @@ def main():
         x_p, y_p = compute_cdf(POWER_DDPG)
         x_p_rand, y_p_rand = compute_cdf(POWER_RAND)
         
-        # PLOT CDF EE
+# PLOT CDF EE
         fig, ax = plt.subplots()
-        ax.plot(x_ddpg, y_ddpg, label='DDPG')
-        ax.plot(x_rand, y_rand, label='Random')
-
-        # Tambahan: panah horizontal untuk selisih di CDF = 0.5
-        cdf_level = 0.5
-        x1 = np.interp(cdf_level, y_ddpg, x_ddpg)
-        x2 = np.interp(cdf_level, y_rand, x_rand)
-        gap_percent = 100 * (x1 - x2) / x2
-
-        ax.annotate(f"{gap_percent:.0f}%",
-                    xy=((x1 + x2) / 2, cdf_level),
-                    xytext=(x2, cdf_level + 0.05),
-                    arrowprops=dict(arrowstyle='<->', color='black'),
-                    ha='center', fontsize=11)
-        ax.axhline(cdf_level, color='gray', linestyle=':', linewidth=1)
-
+        ax.plot(x_ddpg, y_ddpg, label='DDPG', linewidth=2.5)
+        ax.plot(x_rand, y_rand, label='Random', linestyle='--', linewidth=2.5)
         ax.set_xlabel('Energi Efisiensi')
         ax.set_ylabel('CDF')
         ax.set_title('CDF Energi Efisiensi')
         ax.legend()
-        ax.grid(True)
+        ax.grid(False)  # Menghilangkan grid
+        
         fig.savefig("cdf_energy_efficiency.png", dpi=300)
+
         #     log figure
         if opt.write :
             writer.add_figure('CDF Energi Efisiensi', fig, global_step=st)
@@ -172,7 +160,7 @@ def main():
             writer.add_figure('CDF Power', fig3, global_step=st)
             plt.close(fig3)
         # 5) Plot CDF Data Rate sistem
-        R_min = 0.048
+        R_min = 0.08
         x_dr, y_dr = compute_cdf(ALL_DATARATES)
         x_dr_rand, y_dr_rand = compute_cdf(ALL_DATARATES_RAND)
         fig5, ax5 = plt.subplots()
@@ -183,18 +171,6 @@ def main():
         ax5.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
 
         # Tambahkan panah horizontal untuk menunjukkan gap di CDF 0.5
-        cdf_level = 0.5
-        x_ddpg_val = np.interp(cdf_level, y_dr, x_dr)
-        x_rand_val = np.interp(cdf_level, y_dr_rand, x_dr_rand)
-        gap_percent = 100 * (x_ddpg_val - x_rand_val) / x_rand_val
-
-        ax5.annotate(f"{gap_percent:.0f}%",
-                     xy=((x_ddpg_val + x_rand_val)/2, cdf_level),
-                     xytext=(x_rand_val, cdf_level + 0.05),
-                     arrowprops=dict(arrowstyle='<->', color='black'),
-                     ha='center', fontsize=11)
-        ax5.axhline(cdf_level, color='gray', linestyle=':', linewidth=1)
-
         ax5.set_xlabel('Data Rate')
         ax5.set_ylabel('CDF')
         ax5.set_title('CDF of Data Rate (All Nodes)')
@@ -205,12 +181,12 @@ def main():
         if opt.write:
             writer.add_figure('CDF Data Rate Sistem', fig5, global_step=st)
             plt.close(fig5)
-        #akurasi data rate 
+
+        #data rate akurasi 
         total_rate_lolos = np.sum(rate_lolos)
         total_node = env.nodes * 3000
         accuracy = total_rate_lolos * 100 / total_node
         print(f'accuracy data rate {accuracy}, maks node lolos per iterasi : {np.max(rate_lolos)}, min node lolos per iterasi : {np.min(rate_lolos)}')
-
         
         # Buat dataframe
         df = pd.DataFrame({
