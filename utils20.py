@@ -128,19 +128,18 @@ class Actor(nn.Module):
             nn.Linear(state_dim, net_width),
             nn.ReLU(),
             nn.LayerNorm(net_width),
-            nn.Linear(net_width, net_width//2),
+
+            nn.Linear(net_width, net_width // 2),
             nn.ReLU(),
-            nn.LayerNorm(net_width//2),
-            nn.Linear(net_width//2, net_width//4),
+            nn.LayerNorm(net_width // 2),
+
+            nn.Linear(net_width // 2, net_width // 4),
             nn.ReLU(),
-            nn.LayerNorm(net_width//4),
-            nn.Linear(net_width//4, net_width//8),          # NEW LAYER 💥
-            nn.ReLU(),
-            nn.LayerNorm(net_width//8),
+            nn.LayerNorm(net_width // 4),
         )
         # two heads
-        self.dist_head  = nn.Linear(net_width//8, action_dim)  # adjusted
-        self.scale_head = nn.Linear(net_width//8, 1)           # adjusted
+        self.dist_head  = nn.Linear(net_width//4, action_dim)  # adjusted
+        self.scale_head = nn.Linear(net_width//4, 1)           # adjusted
 
         self.maxaction = maxaction
 
@@ -161,24 +160,23 @@ class Q_Critic(nn.Module):
         self.l1 = nn.Linear(state_dim, net_width)
         self.ln1 = nn.LayerNorm(net_width)
 
+        # setelah itu concat action, lalu dua layer lagi
         self.l2 = nn.Linear(net_width + action_dim, net_width//2)
         self.ln2 = nn.LayerNorm(net_width//2)
 
         self.l3 = nn.Linear(net_width//2, net_width//4)
         self.ln3 = nn.LayerNorm(net_width//4)
 
-        self.l4 = nn.Linear(net_width//4, net_width//8)         # NEW LAYER 💥
-        self.ln4 = nn.LayerNorm(net_width//8)
+        # output Q‐value scalar
+        self.l4 = nn.Linear(net_width//4, 1)
 
-        self.l5 = nn.Linear(net_width//8, 1)  # final Q-value
 
     def forward(self, state, action):
-        x = F.relu(self.ln1(self.l1(state)))
-        x = torch.cat([x, action], dim=-1)
-        x = F.relu(self.ln2(self.l2(x)))
-        x = F.relu(self.ln3(self.l3(x)))
-        x = F.relu(self.ln4(self.l4(x)))                      # NEW LINE
-        q = self.l5(x)
+        x = F.relu(self.ln1(self.l1(state)))             # [B, net_width]
+        x = torch.cat([x, action], dim=-1)               # [B, net_width+action_dim]
+        x = F.relu(self.ln2(self.l2(x)))                 # [B, net_width//2]
+        x = F.relu(self.ln3(self.l3(x)))                 # [B, net_width//4]
+        q = self.l4(x)                                   # [B, 1]
         return q
 '''
 class Actor(nn.Module):
