@@ -161,7 +161,7 @@ def main():
             writer.add_figure('CDF Power', fig3, global_step=st)
             plt.close(fig3)
         # 5) Plot CDF Data Rate sistem
-        R_min = 0.152
+        R_min = 0.074
         x_dr, y_dr = compute_cdf(ALL_DATARATES)
         x_dr_rand, y_dr_rand = compute_cdf(ALL_DATARATES_RAND)
         fig5, ax5 = plt.subplots()
