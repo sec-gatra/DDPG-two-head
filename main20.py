@@ -97,14 +97,14 @@ def main():
     if opt.render:
         st=0
         rate_lolos=[]
-        #channel_gains_from_csv1 = np.load('channel_gains_from_csv.npy', allow_pickle=True)
+        channel_gains_from_csv1 = np.load('channel_gains_from_csv.npy', allow_pickle=True)
         #channel_gains_from_csv2 = np.load('channel_gains_from_csv2.npy', allow_pickle=True)
-        #for i in range(len(channel_gains_from_csv2)):
-        for i in range(3000):
+        for i in range(len(channel_gains_from_csv1)):
+        #for i in range(3000):
                             st+=1
                             loc_eval= env.generate_positions() #lokasi untuk s_t
-                            #channel_gain_eval = channel_gains_from_csv2[i]
-                            channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
+                            channel_gain_eval = channel_gains_from_csv2[i]
+                            #channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
                             state_eval,inf=eval_env.reset(channel_gain_eval)
                             state_eval = np.array(state_eval, dtype=np.float32)
                             result1 = evaluate_policy(channel_gain_eval,state_eval,eval_env, agent, turns=1)
@@ -131,28 +131,16 @@ def main():
         
         # PLOT CDF EE
         fig, ax = plt.subplots()
-        ax.plot(x_ddpg, y_ddpg, label='DDPG')
-        ax.plot(x_rand, y_rand, label='Random')
-
-        # Tambahan: panah horizontal untuk selisih di CDF = 0.5
-        cdf_level = 0.5
-        x1 = np.interp(cdf_level, y_ddpg, x_ddpg)
-        x2 = np.interp(cdf_level, y_rand, x_rand)
-        gap_percent = 100 * (x1 - x2) / x2
-
-        ax.annotate(f"{gap_percent:.0f}%",
-                    xy=((x1 + x2) / 2, cdf_level),
-                    xytext=(x2, cdf_level + 0.05),
-                    arrowprops=dict(arrowstyle='<->', color='black'),
-                    ha='center', fontsize=11)
-        ax.axhline(cdf_level, color='gray', linestyle=':', linewidth=1)
-
+        ax.plot(x_ddpg, y_ddpg, label='DDPG', linewidth=2.5)
+        ax.plot(x_rand, y_rand, label='Random', linestyle='--', linewidth=2.5)
         ax.set_xlabel('Energi Efisiensi')
         ax.set_ylabel('CDF')
         ax.set_title('CDF Energi Efisiensi')
         ax.legend()
-        ax.grid(True)
+        ax.grid(False)  # Menghilangkan grid
+        
         fig.savefig("cdf_energy_efficiency.png", dpi=300)
+
         #     log figure
         if opt.write :
             writer.add_figure('CDF Energi Efisiensi', fig, global_step=st)
