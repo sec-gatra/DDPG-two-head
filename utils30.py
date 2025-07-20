@@ -162,6 +162,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
                 next_channel_gain= env.generate_channel_gain(next_loc)
                 s_next, r, dw, tr, info = env.step(a,a_prev, channel_gain, next_channel_gain)
                 total_rate_lolos+=info['data_rate_pass']
+                print(total_rate_lolos)
                 state = s_next
                 channel_gain = next_channel_gain
                 a_prev=a
