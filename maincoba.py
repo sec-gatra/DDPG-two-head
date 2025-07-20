@@ -153,32 +153,31 @@ def main():
         
         # PLOT CDF EE
         fig, ax = plt.subplots()
-        ax.plot(x_ddpg, y_ddpg, label='DDPG')
-        ax.plot(x_rand, y_rand, label='Random')
-
-        # Tambahan: panah horizontal untuk selisih di CDF = 0.5
-        cdf_level = 0.5
-        x1 = np.interp(cdf_level, y_ddpg, x_ddpg)
-        x2 = np.interp(cdf_level, y_rand, x_rand)
-        gap_percent = 100 * (x1 - x2) / x2
-
-        ax.annotate(f"{gap_percent:.0f}%",
-                    xy=((x1 + x2) / 2, cdf_level),
-                    xytext=(x2, cdf_level + 0.05),
-                    arrowprops=dict(arrowstyle='<->', color='black'),
-                    ha='center', fontsize=11)
-        ax.axhline(cdf_level, color='gray', linestyle=':', linewidth=1)
-
+        ax.plot(x_ddpg, y_ddpg, label='DDPG', linewidth=2.5)
+        ax.plot(x_rand, y_rand, label='Random', linestyle='--', linewidth=2.5)
         ax.set_xlabel('Energi Efisiensi')
         ax.set_ylabel('CDF')
         ax.set_title('CDF Energi Efisiensi')
         ax.legend()
-        ax.grid(True)
+        ax.grid(False)  # Menghilangkan grid
         fig.savefig("cdf_energy_efficiency.png", dpi=300)
         #     log figure
         if opt.write :
             writer.add_figure('CDF Energi Efisiensi', fig, global_step=st)
             plt.close(fig)
+                # PLOT CDF EE ddpg onlu
+        fig0, ax0 = plt.subplots()
+        ax0.plot(x_ddpg, y_ddpg, label='DDPG',linewidth=2.5)
+        ax0.set_xlabel('Energi Efisiensi')
+        ax0.set_ylabel('CDF')
+        ax0.set_title('CDF Energi Efisiensi')
+        ax0.legend()
+        ax0.grid(False)  # Menghilangkan grid
+        fig0.savefig("cdf_energy_efficiency_ddpg.png", dpi=300)
+        #     log figure
+        if opt.write :
+            writer.add_figure('CDF Energi Efisiensi ddpg', fig0, global_step=st)
+            plt.close(fig0)
 
         # 2) Plot CDF Data Rate Success
         fig2, ax2 = plt.subplots()
@@ -196,13 +195,13 @@ def main():
 
         # 3) Plot CDF power
         fig3, ax3 = plt.subplots()
-        ax3.plot(x_p, y_p, label='Power DDPG')
-        ax3.plot(x_p_rand, y_p_rand, label='Power Random')
+        ax3.plot(x_p, y_p, label='Power DDPG',linewidth=2.5)
+        ax3.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5, linestyle='--')
         ax3.set_xlabel('Power')
         ax3.set_ylabel('CDF')
         ax3.set_title('CDF POWER')
         ax3.legend()
-        ax3.grid(True)
+        ax3.grid(False)  # Menghilangkan grid
         fig3.savefig("cdf_power.png", dpi=300)
 
         if opt.write:
@@ -239,24 +238,11 @@ def main():
         # Tambahkan garis vertikal R_min
         ax5.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
 
-        # Tambahkan panah horizontal untuk menunjukkan gap di CDF 0.5
-        cdf_level = 0.5
-        x_ddpg_val = np.interp(cdf_level, y_dr, x_dr)
-        x_rand_val = np.interp(cdf_level, y_dr_rand, x_dr_rand)
-        gap_percent = 100 * (x_ddpg_val - x_rand_val) / x_rand_val
-
-        ax5.annotate(f"{gap_percent:.0f}%",
-                     xy=((x_ddpg_val + x_rand_val)/2, cdf_level),
-                     xytext=(x_rand_val, cdf_level + 0.05),
-                     arrowprops=dict(arrowstyle='<->', color='black'),
-                     ha='center', fontsize=11)
-        ax5.axhline(cdf_level, color='gray', linestyle=':', linewidth=1)
-
         ax5.set_xlabel('Data Rate')
         ax5.set_ylabel('CDF')
         ax5.set_title('CDF of Data Rate (All Nodes)')
         ax5.legend()
-        ax5.grid(True)
+        ax5.grid(False)
         fig5.savefig("cdf_sistem_rate.png", dpi=300)
 
         if opt.write:
