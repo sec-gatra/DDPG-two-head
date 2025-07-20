@@ -155,9 +155,9 @@ def main():
         fig, ax = plt.subplots()
         ax.plot(x_ddpg, y_ddpg, label='DDPG', linewidth=2.5)
         ax.plot(x_rand, y_rand, label='Random', linestyle='--', linewidth=2.5)
-        ax.set_xlabel('Energi Efisiensi')
+        ax.set_xlabel('Energy efficiency')
         ax.set_ylabel('CDF')
-        ax.set_title('CDF Energi Efisiensi')
+        ax.set_title('CDF Energy efficiency of 10 Node')
         ax.legend()
         ax.grid(False)  # Menghilangkan grid
         fig.savefig("cdf_energy_efficiency.png", dpi=300)
@@ -199,7 +199,7 @@ def main():
         ax3.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5, linestyle='--')
         ax3.set_xlabel('Power')
         ax3.set_ylabel('CDF')
-        ax3.set_title('CDF POWER')
+        ax3.set_title('CDF POWER of 10 Node')
         ax3.legend()
         ax3.grid(False)  # Menghilangkan grid
         fig3.savefig("cdf_power.png", dpi=300)
@@ -240,7 +240,7 @@ def main():
 
         ax5.set_xlabel('Data Rate')
         ax5.set_ylabel('CDF')
-        ax5.set_title('CDF of Data Rate (All Nodes)')
+        ax5.set_title('CDF of Data Rate of 10 Node')
         ax5.legend()
         ax5.grid(False)
         fig5.savefig("cdf_sistem_rate.png", dpi=300)
