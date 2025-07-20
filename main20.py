@@ -133,9 +133,9 @@ def main():
         fig, ax = plt.subplots()
         ax.plot(x_ddpg, y_ddpg, label='DDPG', linewidth=2.5)
         ax.plot(x_rand, y_rand, label='Random', linestyle='--', linewidth=2.5)
-        ax.set_xlabel('Energi Efisiensi')
+        ax.set_xlabel('Energy efficiency')
         ax.set_ylabel('CDF')
-        ax.set_title('CDF Energi Efisiensi')
+        ax.set_title('CDF Energy efficiency of 20 Nodes')
         ax.legend()
         ax.grid(False)  # Menghilangkan grid
         
@@ -152,9 +152,9 @@ def main():
         ax3.plot(x_p_rand, y_p_rand, label='Power Random')
         ax3.set_xlabel('Power')
         ax3.set_ylabel('CDF')
-        ax3.set_title('CDF POWER')
+        ax3.set_title('CDF POWER of 20 Nodes')
         ax3.legend()
-        ax3.grid(True)
+        ax3.grid(False)
         fig3.savefig("cdf_power.png", dpi=300)
 
         if opt.write:
@@ -174,9 +174,9 @@ def main():
         # Tambahkan panah horizontal untuk menunjukkan gap di CDF 0.5
         ax5.set_xlabel('Data Rate')
         ax5.set_ylabel('CDF')
-        ax5.set_title('CDF of Data Rate (All Nodes)')
+        ax5.set_title('CDF of Data Rate of 20 nodes')
         ax5.legend()
-        ax5.grid(True)
+        ax5.grid(False)
         fig5.savefig("cdf_sistem_rate.png", dpi=300)
 
         if opt.write:
