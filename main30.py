@@ -209,6 +209,7 @@ def main():
     else:
         total_steps = 0
         lr_steps = 0
+        save=[]
         save2=[]
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
             lr_steps+=1
@@ -234,7 +235,7 @@ def main():
                 s_next, r, dw, tr, info= env.step(a,a_prev,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
                 writer.add_scalar("Reward iterasi", r, total_steps)
                 if total_steps > opt.random_steps:
-                    if info['EE'] >= 20 and info['data_rate_pass']>=0.8*env.nodes :
+                    if info['EE'] >= 35 and info['data_rate_pass']>=0.8*env.nodes :
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save.append(total_steps)
                 loc= env.generate_positions()
@@ -317,6 +318,7 @@ def main():
         print(EE_RAND)
         print("The end")
         print(save2)
+        print(save)
 
 #%load_ext tensorboard
 #%tensorboard --logdir runs
