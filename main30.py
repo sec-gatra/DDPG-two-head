@@ -236,6 +236,7 @@ def main():
                 if total_steps > opt.random_steps:
                     if info['EE'] >= 20 and info['data_rate_pass']>=0.8*env.nodes :
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
+                        save.append(total_steps)
                 loc= env.generate_positions()
                 channel_gain=env.generate_channel_gain(loc)
                 if langkah == iterasi :
@@ -276,7 +277,7 @@ def main():
                     print(f'rate violation : {result["rate_violation"]}')
                     print(f'EE: {result["avg_EE"]}')
                     print(f'step : {total_steps}')
-                    if result['avg_EE'] >= 30 and result['data_rate_lolos']>=0.8*env.nodes :
+                    if result['avg_EE'] >= 25 and result['data_rate_lolos']>=0.7*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save2.append(int(total_steps))
