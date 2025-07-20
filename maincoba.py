@@ -214,7 +214,7 @@ def main():
             ax4.plot(x, y, label=f'Node {idx}')
 
         # Garis vertikal untuk R_min
-        R_min = 0.305
+        R_min = 0.152
         ax4.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
 
         ax4.set_xlabel('Data Rate')
