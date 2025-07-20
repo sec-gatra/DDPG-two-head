@@ -21,7 +21,7 @@ parser.add_argument('--Loadmodel', type=str2bool, default=False, help='Load pret
 parser.add_argument('--ModelIdex', type=int, default=100, help='which model to load')
 
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--Max_train_steps', type=int, default = 2000, help='Max training steps') #aslinya 5e6
+parser.add_argument('--Max_train_steps', type=int, default = 200000, help='Max training steps') #aslinya 5e6
 parser.add_argument('--save_interval', type=int, default=2500, help='Model saving interval, in steps.') #aslinya 1e5
 parser.add_argument('--eval_interval', type=int, default=2000, help='Model evaluating interval, in steps.') #aslinya 2e3
 
@@ -279,7 +279,7 @@ def main():
                     print(f'EE: {result["avg_EE"]}')
                     print(f'step : {total_steps}')
                     print(f'percentase rate lolos: {result["total_rate_lolos"]}')
-                    if result['avg_EE'] >= 25 and result['total_rate_lolos']>=0.7*env.nodes :
+                    if result['avg_EE'] >= 30 and result['total_rate_lolos']>=0.75*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save2.append(int(total_steps))
