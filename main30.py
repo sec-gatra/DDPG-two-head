@@ -98,7 +98,7 @@ def main():
         st=0
         rate_lolos=[]
         #channel_gains_from_csv1 = np.load('channel_gains_from_csv.npy', allow_pickle=True)
-        for i in range((300)):
+        for i in range((3000)):
         #for i in range(len(channel_gains_from_csv1)):
                             print(i)
                             st+=1
