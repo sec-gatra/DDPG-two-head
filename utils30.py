@@ -122,6 +122,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     jumlah_data_rate_rand=0
     data_rate =[]
     data_rate_rand =[]
+    total_rate_lolos=0
     rate_violation = 0
 
     for _ in range(turns):
@@ -144,14 +145,28 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             s_next, r, dw, tr, info = env.step(a,a_prev, channel_gain, next_channel_gain)
             rate_violation = info['rate_violation']
             count_data_ok=info['data_rate_pass']
+            total_rate_lolos+=info['data_rate_pass']
             data_rate=info['data_rate']
+
+            
 
             #step dari random 
             s_next1, r1, dw1, tr1, info1 = env.step(a_rand, a_prev_rand, channel_gain, next_channel_gain)
             print(f'DDPG power : {a}, reward :{r}, total power {np.sum(a)}')
             print(f'random power : {a_rand}, reward :{r1}, total power {np.sum(a_rand)}')
             data_rate_rand=info1['data_rate']
-            
+
+            for i in range(200):
+                a = agent.select_action(state, deterministic=True)
+                next_loc         = env.generate_positions()
+                next_channel_gain= env.generate_channel_gain(next_loc)
+                s_next, r, dw, tr, info = env.step(a,a_prev, channel_gain, next_channel_gain)
+                total_rate_lolos+=info['data_rate_pass']
+                state = s_next
+                channel_gain = next_channel_gain
+                a_prev=a
+                
+                
         
             # cek constraint power: total_power ≤ P_th
             if np.sum(a) <= P_th:
@@ -184,6 +199,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     avg_EE_rand = total_EE_rand / turns 
     avg_power = total_power / turns
     avg_power_rand = total_power_rand / turns
+    total_rate_lolos=100*total_rate_lolos/(200*turns*30)
     return {
         'avg_score':    avg_score,
         'avg_score_rand' : avg_score_rand,
@@ -195,6 +211,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
         'data_rate' : data_rate,
         'data_rate_rand' :data_rate_rand,
         'rate_violation' : rate_violation,
+        'total_rate_lolos' : total_rate_lolos,
         
     }
 
