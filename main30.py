@@ -105,7 +105,7 @@ def main():
                             #loc_eval= env.generate_positions() #lokasi untuk s_t
                             #channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
                             channel_gain_eval = channel_gains_from_csv1[i]
-                            print(channel_gain_eval)
+                            #print(channel_gain_eval)
                             state_eval,a_prev,inf=eval_env.reset(channel_gain_eval)
                             state_eval = np.array(state_eval, dtype=np.float32)
                             result1 = evaluate_policy(channel_gain_eval,state_eval,eval_env, agent, turns=1)
