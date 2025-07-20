@@ -90,7 +90,7 @@ class GameState:
         # Reward formula dinamis
         #reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
         #reward = EE - 5*rate_violation - np.sum(power)
-        reward = 50*np.log(EE) - 10*rate_violation - 5*np.sum(power) + 10*total_rate
+        reward = EE - 10*rate_violation - 5*np.sum(power) + 10*total_rate
         #reward = alpha*np.log(EE) - beta*rate_violation - zeta*np.sum(penalty_power)
 
         # Condition 2: Any data rate below threshold
