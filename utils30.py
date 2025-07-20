@@ -155,7 +155,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             print(f'DDPG power : {a}, reward :{r}, total power {np.sum(a)}')
             print(f'random power : {a_rand}, reward :{r1}, total power {np.sum(a_rand)}')
             data_rate_rand=info1['data_rate']
-
+            '''
             for i in range(200):
                 a = agent.select_action(state, deterministic=True)
                 next_loc         = env.generate_positions()
@@ -166,6 +166,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
                 state = s_next
                 channel_gain = next_channel_gain
                 a_prev=a
+            '''
                 
                 
         
@@ -212,7 +213,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
         'data_rate' : data_rate,
         'data_rate_rand' :data_rate_rand,
         'rate_violation' : rate_violation,
-        'total_rate_lolos' : total_rate_lolos,
+        #'total_rate_lolos' : total_rate_lolos,
         
     }
 
