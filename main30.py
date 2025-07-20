@@ -27,8 +27,8 @@ parser.add_argument('--eval_interval', type=int, default=2000, help='Model evalu
 
 parser.add_argument('--gamma', type=float, default=0.99, help='Discounted Factor')
 parser.add_argument('--net_width', type=int, default=1024, help='Hidden net width, s_dim-400-300-a_dim')
-parser.add_argument('--a_lr', type=float, default=5e-5, help='Learning rate of actor') # 2e-3
-parser.add_argument('--c_lr', type=float, default=3e-6, help='Learning rate of critic') # 1e-3
+parser.add_argument('--a_lr', type=float, default=5e-4, help='Learning rate of actor') # 2e-3
+parser.add_argument('--c_lr', type=float, default=3e-5, help='Learning rate of critic') # 1e-3
 parser.add_argument('--batch_size', type=int, default=128, help='batch_size of training')
 parser.add_argument('--random_steps', type=int, default=50000, help='random steps before trianing')
 parser.add_argument('--noise', type=float, default=0.05, help='exploring noise') #aslinya 0.1
