@@ -145,7 +145,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             s_next, r, dw, tr, info = env.step(a,a_prev, channel_gain, next_channel_gain)
             rate_violation = info['rate_violation']
             count_data_ok=info['data_rate_pass']
-            total_rate_lolos+=info['data_rate_pass']
+            #total_rate_lolos+=info['data_rate_pass']
             data_rate=info['data_rate']
 
             
