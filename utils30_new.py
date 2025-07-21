@@ -14,7 +14,6 @@ import torch.nn.functional as F
 class Actor(nn.Module):
     def __init__(self, state_dim, action_dim, net_width, maxaction):
         super().__init__()
-        # shared trunk
         self.net = nn.Sequential(
             nn.Linear(state_dim, net_width),
             nn.ReLU(),
@@ -25,52 +24,55 @@ class Actor(nn.Module):
             nn.Linear(net_width//2, net_width//4),
             nn.ReLU(),
             nn.LayerNorm(net_width//4),
-            nn.Linear(net_width//4, net_width//8),          # NEW LAYER 💥
+            nn.Linear(net_width//4, net_width//8),
             nn.ReLU(),
             nn.LayerNorm(net_width//8),
         )
-        # two heads
-        self.dist_head  = nn.Linear(net_width//8, action_dim)  # adjusted
-        self.scale_head = nn.Linear(net_width//8, 1)           # adjusted
-
+        self.dist_head  = nn.Linear(net_width//8, action_dim)
+        self.scale_head = nn.Linear(net_width//8, 1)
         self.maxaction = maxaction
+
+        # Xavier initialization
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.xavier_uniform_(m.weight)
+                nn.init.constant_(m.bias, 0.0)
 
     def forward(self, state):
         x = self.net(state)
         logits = self.dist_head(x)
         dist   = F.softmax(logits, dim=-1)
-
         scale  = torch.sigmoid(self.scale_head(x)).squeeze(-1)
-        total_power = scale * self.maxaction
-        return dist * total_power.unsqueeze(-1)
-
-
+        return dist * (scale.unsqueeze(-1) * self.maxaction)
 
 class Q_Critic(nn.Module):
     def __init__(self, state_dim, action_dim, net_width=1024):
         super().__init__()
-        self.l1 = nn.Linear(state_dim, net_width)
+        self.l1  = nn.Linear(state_dim, net_width)
         self.ln1 = nn.LayerNorm(net_width)
-
-        self.l2 = nn.Linear(net_width + action_dim, net_width//2)
+        self.l2  = nn.Linear(net_width + action_dim, net_width//2)
         self.ln2 = nn.LayerNorm(net_width//2)
-
-        self.l3 = nn.Linear(net_width//2, net_width//4)
+        self.l3  = nn.Linear(net_width//2, net_width//4)
         self.ln3 = nn.LayerNorm(net_width//4)
-
-        self.l4 = nn.Linear(net_width//4, net_width//8)         # NEW LAYER 💥
+        self.l4  = nn.Linear(net_width//4, net_width//8)
         self.ln4 = nn.LayerNorm(net_width//8)
+        self.l5  = nn.Linear(net_width//8, 1)
 
-        self.l5 = nn.Linear(net_width//8, 1)  # final Q-value
+        # Xavier initialization
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.xavier_uniform_(m.weight)
+                nn.init.constant_(m.bias, 0.0)
 
     def forward(self, state, action):
         x = F.relu(self.ln1(self.l1(state)))
         x = torch.cat([x, action], dim=-1)
         x = F.relu(self.ln2(self.l2(x)))
         x = F.relu(self.ln3(self.l3(x)))
-        x = F.relu(self.ln4(self.l4(x)))                      # NEW LINE
+        x = F.relu(self.ln4(self.l4(x)))
         q = self.l5(x)
         return q
+
 
 def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
     total_reward = 0
