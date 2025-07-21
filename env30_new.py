@@ -51,9 +51,27 @@ class GameState:
         
         # reward = energy‐efficiency minus penalties
         #reward = (total_rate / total_power) - α * penalty_rate - β * penalty_power
-        data_rate_lolos=int(sum(dr >= self.Rmin for dr in data_rate))
-        frac_ok = data_rate_lolos / self.nodes
-        reward = (total_rate / total_power) * frac_ok
+        #data_rate_lolos=int(sum(dr >= self.Rmin for dr in data_rate))
+        #frac_ok = data_rate_lolos / self.nodes
+        #reward = (total_rate / total_power) * frac_ok
+        
+        total_power     = np.sum(power)
+        total_rate      = np.sum(data_rate)
+        n_ok            = int((data_rate >= self.Rmin).sum())
+        frac_ok         = n_ok / self.nodes
+        penalty_power   = max(0.0, total_power - self.p_max) / self.p_max
+        
+        # 2) energy‐efficiency with epsilon floor
+        eps = 1e-2
+        ee = total_rate / (total_power + eps)
+        
+        # 3) combine as a “soft” coverage‐weighted EE
+        #   so if no users are covered, reward = 0 (not that huge EE)
+        #   and as you cover more users, you harvest more of the EE incentive
+        reward = frac_ok * ee \
+               - 1.0 * penalty_power         # you can tune the 1.0 multiplier
+
+# (no more hard −10 terms here)
 
         # Done flag: power budget violation ends episode
         dw = bool(total_power > self.p_max)
