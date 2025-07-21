@@ -1,14 +1,14 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from env30 import GameState
-from ddpg import *
+from env30_new import GameState
+from ddpg_new import *
 from collections import deque
 import torch.nn as nn
 import os, shutil
 import argparse
 from datetime import datetime
-from utils30 import str2bool,evaluate_policy, evaluate_policy_reward
+from utils30_new import str2bool,evaluate_policy, evaluate_policy_reward
 
 
 '''Hyperparameter Setting'''
