@@ -42,11 +42,15 @@ class GameState:
         total_rate = np.sum(data_rate)
         rate_violation = np.sum(np.maximum(self.Rmin - data_rate, 0.0))
 
-        # Reward shaping: penalize violations, else energy efficiency
-        if total_power > self.p_max or rate_violation > 0:
-            reward = -10.0
-        else:
-            reward = total_rate / total_power
+        penalty_rate  = rate_violation / self.nodes         # fraction of missing rate
+        penalty_power = max(0.0, total_power - self.p_max) / self.p_max
+        
+        # trade‐off constants you can sweep over:
+        α = 10.0     # penalty per unit of rate shortfall
+        β =  1.0     # penalty per unit of power overshoot
+        
+        # reward = energy‐efficiency minus penalties
+        reward = (total_rate / total_power) - α * penalty_rate - β * penalty_power
 
         # Done flag: power budget violation ends episode
         dw = bool(total_power > self.p_max)
