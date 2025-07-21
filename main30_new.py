@@ -91,10 +91,16 @@ def main():
             next_loc = env.generate_positions()
             next_gain = env.generate_channel_gain(next_loc)
             next_state, reward, dw, tr, info = env.step(action, a_prev, gain, next_gain)
+            coverage = info['coverage']
+            ee       = info['ee']
 
             # Store transition
             agent.replay_buffer.add(state, action, reward, next_state, dw)
             state, a_prev, gain = next_state, action, next_gain
+            if opt.write:
+                writer.add_scalar('train/reward',       reward,    total_steps)
+                writer.add_scalar('train/coverage',     coverage,  total_steps)
+                writer.add_scalar('train/ee',           ee,        total_steps)
 
             # Train
             if total_steps >= opt.random_steps:
