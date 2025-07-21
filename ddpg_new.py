@@ -46,7 +46,8 @@ class DDPG_agent:
 
     def select_action(self, state, deterministic=False):
         state = torch.FloatTensor(np.array(state, dtype=np.float32)[None]).to(self.dvc)
-        a = self.actor(state).cpu().numpy()[0]
+        #a = self.actor(state).cpu().numpy()[0]
+        a = self.actor(state).detach().cpu().numpy()[0]
         if deterministic:
             return a
         # Add exploration noise
