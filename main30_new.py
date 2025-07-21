@@ -112,7 +112,7 @@ def main():
                 avg_reward3 = evaluate_policy_reward(gain, state, eval_env, agent, turns=3)
                 print(f"Step {total_steps}, Avg EE: {avg_metrics['avg_EE']:.2f}, Rate OK: {avg_metrics['data_rate_lolos']}")
 
-                if avg_metrics['avg_EE'] >= 30 and avg_metrics['data_rate_pass'] >= 0.7 * env.nodes:
+                if avg_metrics['avg_EE'] >= 30 and avg_metrics['data_rate_lolos'] >= 0.7 * env.nodes:
                     agent.save('PowerAlloc', total_steps)
 
                 if opt.write:
