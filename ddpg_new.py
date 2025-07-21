@@ -52,6 +52,7 @@ class DDPG_agent:
             return a
         # Add exploration noise
         noise = self.noise_proc()
+        self.noise_proc.sigma = max(0.05, self.noise_proc.sigma * 0.995)
         return np.clip(a + noise, 0, self.max_action)
 
     def train(self):
