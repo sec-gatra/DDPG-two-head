@@ -3,7 +3,7 @@ import torch.nn as nn
 import argparse
 import torch
 import numpy as np
-from env30 import GameState 
+from env30_new import GameState 
 
 import torch
 import torch.nn as nn
