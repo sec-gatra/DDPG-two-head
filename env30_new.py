@@ -45,43 +45,44 @@ class GameState:
         penalty_rate  = rate_violation / self.nodes         # fraction of missing rate
         penalty_power = max(0.0, total_power - self.p_max) / self.p_max
         
-        # trade‐off constants you can sweep over:
-        α = 10.0     # penalty per unit of rate shortfall
-        β =  1.0     # penalty per unit of power overshoot
+        # di env30.py, dalam fungsi step(...)
+        total_power = np.sum(power)
+        total_rate  = np.sum(data_rate)
+        n_ok        = int((data_rate >= self.Rmin).sum())
+        coverage    = n_ok / self.nodes
         
-        # reward = energy‐efficiency minus penalties
-        #reward = (total_rate / total_power) - α * penalty_rate - β * penalty_power
-        #data_rate_lolos=int(sum(dr >= self.Rmin for dr in data_rate))
-        #frac_ok = data_rate_lolos / self.nodes
-        #reward = (total_rate / total_power) * frac_ok
-        
-        total_power     = np.sum(power)
-        total_rate      = np.sum(data_rate)
-        n_ok            = int((data_rate >= self.Rmin).sum())
-        frac_ok         = n_ok / self.nodes
-        penalty_power   = max(0.0, total_power - self.p_max) / self.p_max
-        
-        # 2) energy‐efficiency with epsilon floor
+        # 1) Energy-efficiency dengan floor kecil
         eps = 1e-2
-        ee = total_rate / (total_power + eps)
+        ee  = total_rate / (total_power + eps)
         
-        # 3) combine as a “soft” coverage‐weighted EE
-        #   so if no users are covered, reward = 0 (not that huge EE)
-        #   and as you cover more users, you harvest more of the EE incentive
-        reward = frac_ok * ee \
-               - 1.0 * penalty_power         # you can tune the 1.0 multiplier
+        # 2) Two-phase reward:
+        if coverage < 0.8:
+            # Phase 1: dorong coverage sampai 80%
+            reward = coverage
+        else:
+            # Phase 2: optimize EE sambil jaga budget
+            penalty_p = max(0.0, total_power - self.p_max) / self.p_max
+            reward    = ee - 2.0 * penalty_p
+        
+        # isi info seperti biasa
+        info = {
+          'coverage': coverage,
+          'ee':        ee,
+          'total_power': total_power,
+          'n_ok': n_ok,
+          'EE': total_rate / total_power if total_power > 0 else 0.0,
+          'data_rate_pass': int(sum(dr >= self.Rmin for dr in data_rate)),
+          'total_power': float(total_power),
+          'data_rate': data_rate,
+          'rate_violation': float(rate_violation)
+          # ...
+        }
 
 # (no more hard −10 terms here)
 
         # Done flag: power budget violation ends episode
         dw = bool(total_power > self.p_max)
-        info = {
-            'EE': total_rate / total_power if total_power > 0 else 0.0,
-            'data_rate_pass': int(sum(dr >= self.Rmin for dr in data_rate)),
-            'total_power': float(total_power),
-            'data_rate': data_rate,
-            'rate_violation': float(rate_violation)
-        }
+
 
         # Next observation
         intr_next = self.interferensi(power, next_channel_gain)
