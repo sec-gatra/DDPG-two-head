@@ -51,7 +51,8 @@ class GameState:
         
         # reward = energy‐efficiency minus penalties
         #reward = (total_rate / total_power) - α * penalty_rate - β * penalty_power
-        frac_ok = info['data_rate_pass'] / self.nodes
+        data_rate_lolos=int(sum(dr >= self.Rmin for dr in data_rate))
+        frac_ok = data_rate_lolos / self.nodes
         reward = (total_rate / total_power) * frac_ok
 
         # Done flag: power budget violation ends episode
