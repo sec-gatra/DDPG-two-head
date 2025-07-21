@@ -50,7 +50,9 @@ class GameState:
         β =  1.0     # penalty per unit of power overshoot
         
         # reward = energy‐efficiency minus penalties
-        reward = (total_rate / total_power) - α * penalty_rate - β * penalty_power
+        #reward = (total_rate / total_power) - α * penalty_rate - β * penalty_power
+        frac_ok = info['data_rate_pass'] / self.nodes
+        reward = (total_rate / total_power) * frac_ok
 
         # Done flag: power budget violation ends episode
         dw = bool(total_power > self.p_max)
