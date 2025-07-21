@@ -13,12 +13,14 @@ class GameState:
         # Observation: [norm_gain, norm_interference, norm_power]
         self.observation_space = 2 * nodes * nodes + nodes
         self.action_space = nodes
-
+    
     def sample_valid_power2(self):
         rand = np.random.rand(self.nodes)
         rand /= np.sum(rand)
         scale = np.random.uniform(0.0, 1.0)
         return rand * self.p_max * scale
+    def sample_valid_power(self):
+        return self.sample_valid_power2()
 
     def reset(self, gain, seed=None):
         power = self.sample_valid_power2()
