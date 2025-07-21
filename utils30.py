@@ -136,7 +136,8 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             total_steps += 1
 
             # aksi deterministik
-            a = agent.select_action(state, deterministic=True)
+            #a = agent.select_action(state, deterministic=True)
+            a=env.sample_valid_power()
             #random_allocation 
             a_rand=env.sample_valid_power()
             # generate next state
