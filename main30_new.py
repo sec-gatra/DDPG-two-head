@@ -40,8 +40,8 @@ def compute_cdf(data):
 
 def main():
     # Set up environment and agent
-    env = GameState(nodes=30, p_max=15)
-    eval_env = GameState(nodes=30, p_max=15)
+    env = GameState(nodes=10, p_max=15)
+    eval_env = GameState(nodes=10, p_max=15)
     opt.state_dim  = env.observation_space
     opt.action_dim = env.action_space
     opt.max_action = env.p_max
