@@ -65,6 +65,7 @@ class GameState:
         
         total_daya=np.sum(power)
         total_rate  = np.sum(data_rate)
+        fail_power = total_daya > self.p_max
         '''
         # Condition 1: Budget exceeded
         fail_power = total_daya > self.p_max
