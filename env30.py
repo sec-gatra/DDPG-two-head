@@ -80,9 +80,9 @@ class GameState:
         # 2) Power violation: only when total_power > p_max
         power_violation = max(0.0, total_daya - self.p_max)
         penalty_power   = 0.1 * power_violation
-        k0 = 10           # Base penalty rate weight
+        k0 = 5           # Base penalty rate weight
         alpha = 1        # Semakin tinggi EE, semakin berat penalty rate
-        beta = 5        # Penalti untuk total daya
+        beta = 2        # Penalti untuk total daya
         gammas = 1         # Penguat untuk sum-rate
         
         # Koefisien penalty rate tergantung EE
@@ -92,7 +92,7 @@ class GameState:
         #reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
         #reward = EE - 5*rate_violation - np.sum(power)
         #reward = 30*EE - 10*rate_violation - 15*np.sum(power) + 10*total_rate
-        reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
+        reward = EE #- k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
         #reward = alpha*np.log(EE) - beta*rate_violation - zeta*np.sum(penalty_power)
 
         # Condition 2: Any data rate below threshold
