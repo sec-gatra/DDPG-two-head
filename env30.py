@@ -92,31 +92,13 @@ class GameState:
         #reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
         #reward = EE - 5*rate_violation - np.sum(power)
         #reward = 30*EE - 10*rate_violation - 15*np.sum(power) + 10*total_rate
-        #reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
+        reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
         #reward = alpha*np.log(EE) - beta*rate_violation - zeta*np.sum(penalty_power)
 
         # Condition 2: Any data rate below threshold
         #min_rate = 0.5
         #fail_rate = np.any(data_rate < min_rate)
         
-        total_power = np.sum(power)
-        total_rate  = np.sum(data_rate)
-        n_ok        = int((data_rate >= self.Rmin).sum())
-        coverage    = n_ok / self.nodes
-        
-        # 1) Energy-efficiency dengan floor kecil
-        eps = 1e-2
-        ee  = total_rate / (total_power + eps)
-        
-        # 2) Two-phase reward:
-        if coverage < 0.8:
-            # Phase 1: dorong coverage sampai 80%
-            reward = coverage * 100
-        else:
-            # Phase 2: optimize EE sambil jaga budget
-            penalty_p = max(0.0, total_power - self.p_max) / self.p_max
-            reward    = ee - 2.0 * penalty_p
-
         # Final done flag for “dead/win”
         dw = bool(fail_power)
 
@@ -126,7 +108,6 @@ class GameState:
         'total_power': float(np.sum(power)),
         'data_rate' : data_rate,
         'rate_violation' : rate_violation,
-        'coverage' : coverage,
         }
 
         #reward = -np.sum(data_rate_constraint) + EE - 5*self.step_function(total_daya-self.p_max)
