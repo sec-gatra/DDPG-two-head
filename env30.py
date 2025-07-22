@@ -82,7 +82,7 @@ class GameState:
         penalty_power   = 0.1 * power_violation
         k0 = 10           # Base penalty rate weight
         alpha = 1        # Semakin tinggi EE, semakin berat penalty rate
-        beta = 2        # Penalti untuk total daya
+        beta = 5        # Penalti untuk total daya
         gammas = 1         # Penguat untuk sum-rate
         
         # Koefisien penalty rate tergantung EE
