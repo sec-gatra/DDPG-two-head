@@ -7,7 +7,7 @@ class GameState:
     def __init__(self, nodes, p_max, area_size=(20, 20)):
         self.nodes = nodes
         self.p_max = p_max
-        self.gamma = 0.99
+        self.gamma = 0.5
         self.beta = 1
         self.noise_power = 2e-10
         self.area_size = area_size
