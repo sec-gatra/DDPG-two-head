@@ -58,7 +58,7 @@ class GameState:
         # 2) Two-phase reward:
         if coverage < 0.3: reward = coverage * 0.5
         elif coverage < 0.7: reward = coverage
-        else:  reward = ee - 2.0 * penalty_p
+        else:  reward = ee - 2.0 * penalty_power
 
         
         # isi info seperti biasa
