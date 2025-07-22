@@ -56,13 +56,10 @@ class GameState:
         ee  = total_rate / (total_power + eps)
         
         # 2) Two-phase reward:
-        if coverage < 0.8:
-            # Phase 1: dorong coverage sampai 80%
-            reward = coverage
-        else:
-            # Phase 2: optimize EE sambil jaga budget
-            penalty_p = max(0.0, total_power - self.p_max) / self.p_max
-            reward    = ee - 2.0 * penalty_p
+        if coverage < 0.3: reward = coverage * 0.5
+        elif coverage < 0.7: reward = coverage
+        else:  reward = ee - 2.0 * penalty_p
+
         
         # isi info seperti biasa
         info = {
