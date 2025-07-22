@@ -235,6 +235,7 @@ def main():
                 next_channel_gain=env.generate_channel_gain(next_loc) #channel gain untuk s_t
                 s_next, r, dw, tr, info= env.step(a,a_prev,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
                 writer.add_scalar("Reward iterasi", r, total_steps)
+                writer.add_scalar('train/coverage',     info['coverage'],  total_steps)
                 if total_steps > opt.random_steps:
                     if info['EE'] >= 35 and info['data_rate_pass']>=0.8*env.nodes :
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
