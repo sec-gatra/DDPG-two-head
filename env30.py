@@ -66,7 +66,7 @@ class GameState:
         total_daya=np.sum(power)
         total_rate  = np.sum(data_rate)
         fail_power = total_daya > self.p_max
-        '''
+        
         # Condition 1: Budget exceeded
         fail_power = total_daya > self.p_max
         rate_violation = np.sum(np.maximum(self.Rmin - data_rate, 0.0))
@@ -91,14 +91,14 @@ class GameState:
         # Reward formula dinamis
         #reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
         #reward = EE - 5*rate_violation - np.sum(power)
-        reward = 30*EE - 10*rate_violation - 15*np.sum(power) + 10*total_rate
+        #reward = 30*EE - 10*rate_violation - 15*np.sum(power) + 10*total_rate
         #reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
         #reward = alpha*np.log(EE) - beta*rate_violation - zeta*np.sum(penalty_power)
 
         # Condition 2: Any data rate below threshold
         #min_rate = 0.5
         #fail_rate = np.any(data_rate < min_rate)
-        '''
+        
         total_power = np.sum(power)
         total_rate  = np.sum(data_rate)
         n_ok        = int((data_rate >= self.Rmin).sum())
