@@ -213,11 +213,7 @@ def main():
         save=[]
         save2=[]
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
-            lr_steps+=1
-            if lr_steps==sepertiga_eps :
-                opt.a_lr=0.6 * opt.a_lr
-                opt.c_lr=0.6 * opt.c_lr
-                lr_steps=0
+
             loc= env.generate_positions() #lokasi untuk s_t
             channel_gain=env.generate_channel_gain(loc) #channel gain untuk s_t
             s,a_prev,info= env.reset(channel_gain, seed=env_seed)  # Do not use opt.seed directly, or it can overfit to opt.seed
