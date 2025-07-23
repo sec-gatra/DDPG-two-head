@@ -291,7 +291,7 @@ def main():
                         save2.append(int(total_steps))
                         #ee.append(info['EE'])
                         #datret.append(info['data_rate_pass'])
-                    if total_steps > opt_random_steps :
+                    if total_steps > opt.random_steps :
                         writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
                     #writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
                         writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
