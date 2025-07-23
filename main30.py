@@ -287,7 +287,7 @@ def main():
                     print(f'Actor rate : {opt.a_lr}, critic rate : {opt.c_lr}')
                     print(f'step : {total_steps}')
                     #print(f'percentase rate lolos: {result["total_rate_lolos"]}')
-                    if result['avg_EE'] >= 10 and result['data_rate_lolos']>=0.7*env.nodes :
+                    if result['avg_EE'] >= 10 and result['data_rate_lolos']>=0.8*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save2.append(int(total_steps))
