@@ -242,7 +242,7 @@ def main():
                 print(f'step : {total_steps}')
                 '''
                 if total_steps > opt.random_steps:
-                    if info['EE'] >= 35 and info['data_rate_pass']>=0.8*env.nodes :
+                    if info['EE'] >= 50 and info['data_rate_pass']>=0.8*env.nodes :
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save.append(total_steps)
                 loc= env.generate_positions()
