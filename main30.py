@@ -235,7 +235,7 @@ def main():
                 #writer.add_scalar('train/coverage',     info['coverage'],  total_steps)
                 print(a)
                 print(np.sum(a))
-                print(f'data rate lolos : {info["data_rate_lolos"]}')
+                print(f'data rate lolos : {info["data_rate_pass"]}')
                 print(f'rate violation : {info["rate_violation"]}')
                 print(f'EE: {info["EE"]}')
                 print(f'step : {total_steps}')
