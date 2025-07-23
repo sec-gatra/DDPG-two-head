@@ -31,7 +31,7 @@ parser.add_argument('--a_lr', type=float, default=1e-5, help='Learning rate of a
 parser.add_argument('--c_lr', type=float, default=1e-6, help='Learning rate of critic') # 1e-5 bagus
 parser.add_argument('--batch_size', type=int, default=10, help='batch_size of training')
 parser.add_argument('--random_steps', type=int, default=3000, help='random steps before trianing')
-parser.add_argument('--noise', type=float, default=0.000001, help='exploring noise') #aslinya 0.1
+parser.add_argument('--noise', type=float, default=0.08, help='exploring noise') #aslinya 0.1
 opt = parser.parse_args()
 opt.dvc = torch.device(opt.dvc) # from str to torch.device
 
