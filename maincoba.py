@@ -179,6 +179,21 @@ def main():
             writer.add_figure('CDF Energi Efisiensi ddpg', fig0, global_step=st)
             plt.close(fig0)
 
+        #plot cdf EE random only
+        fig9, ax9 = plt.subplots()
+        #ax9.plot(x_, y_ddpg, label='DDPG',linewidth=2.5)
+        ax9.plot(x_rand, y_rand, label = "RANDOM", linewidth = 2.5)
+        ax9.set_xlabel('Energy Efficiency')
+        ax9.set_ylabel('CDF')
+        ax9.set_title('CDF Energy Efficiency of Random (10 nodes)')
+        ax9.legend()
+        ax9.grid(False)  # Menghilangkan grid
+        fig9.savefig("cdf_energy_efficiency_ddpg.png", dpi=300)
+        #     log figure
+        if opt.write :
+            writer.add_figure('CDF Energi Efisiensi Random', fig9, global_step=st)
+            plt.close(fig9)
+
         # 2) Plot CDF Data Rate Success
         fig2, ax2 = plt.subplots()
         ax2.plot(x_rate, y_rate, label='DDPG')
@@ -207,12 +222,41 @@ def main():
         if opt.write:
             writer.add_figure('CDF Power', fig3, global_step=st)
             plt.close(fig3)
-        # 4) Plot CDF Data Rate per Node
+
+                # 3) Plot CDF power ddpg only
+        figpd, axpd = plt.subplots()
+        axpd.plot(x_p, y_p, label='Power DDPG',linewidth=2.5)
+        #axpd.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5, linestyle='--')
+        axpd.set_xlabel('Power')
+        axpd.set_ylabel('CDF')
+        axpd.set_title('CDF POWER DDPG of 10 Nodes')
+        axpd.legend()
+        axpd.grid(False)  # Menghilangkan grid
+        figpd.savefig("cdf_power_ddpg.png", dpi=300)
+
+        if opt.write:
+            writer.add_figure('CDF Power ddpg', figpd, global_step=st)
+            plt.close(figpd)
+
+                # 4) Plot CDF power random only
+        figpr, axpr = plt.subplots()
+        #axpr.plot(x_p, y_p, label='Power DDPG',linewidth=2.5)
+        axpr.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5)
+        axpr.set_xlabel('Power')
+        axpr.set_ylabel('CDF')
+        axpr.set_title('CDF POWER Random of 10 Nodes')
+        axpr.legend()
+        axpr.grid(False)  # Menghilangkan grid
+        figpr.savefig("cdf_power_random.png", dpi=300)
+
+        if opt.write:
+            writer.add_figure('CDF Power random', figpr, global_step=st)
+            plt.close(figpr)
+        # 5) Plot CDF Data Rate per Node
         fig4, ax4 = plt.subplots(figsize=(10, 6))
         for idx, node_data in enumerate(ALL_DATARATES_NODES, 1):
             x, y = compute_cdf(node_data)
-            ax4.plot(x, y, label=f'Node {idx}')
-
+            ax4.plot(x, y, label=f'Node {idx}')    
         # Garis vertikal untuk R_min
         R_min = 0.152
         ax4.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
@@ -228,7 +272,8 @@ def main():
         if opt.write:
             writer.add_figure('CDF Data Rate per Node', fig4, global_step=st)
             plt.close(fig4)
-        # 5) Plot CDF Data Rate sistem
+            
+        # 6) Plot CDF Data Rate sistem
         x_dr, y_dr = compute_cdf(ALL_DATARATES)
         x_dr_rand, y_dr_rand = compute_cdf(ALL_DATARATES_RAND)
         fig5, ax5 = plt.subplots()
@@ -248,6 +293,48 @@ def main():
         if opt.write:
             writer.add_figure('CDF Data Rate Sistem', fig5, global_step=st)
             plt.close(fig5)
+
+                # 7) Plot CDF Data Rate sistem ddpg only
+        #x_dr, y_dr = compute_cdf(ALL_DATARATES)
+        #x_dr_rand, y_dr_rand = compute_cdf(ALL_DATARATES_RAND)
+        figdr, axdr = plt.subplots()
+        axdr.plot(x_dr, y_dr, label='DDPG (All Nodes)')
+        #axde.plot(x_dr_rand, y_dr_rand, label='Random (All Nodes)', linestyle='--')
+
+        # Tambahkan garis vertikal R_min
+        axdr.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
+
+        axdr.set_xlabel('Data Rate')
+        axdr.set_ylabel('CDF')
+        axdr.set_title('CDF of Data Rate DDPG of 10 Nodes')
+        axdr.legend()
+        axdr.grid(False)
+        figdr.savefig("cdf_sistem_rate_DDPG.png", dpi=300)
+
+        if opt.write:
+            writer.add_figure('CDF Data Rate Sistem DDPG', figdr, global_step=st)
+            plt.close(figdr)
+
+                # 8) Plot CDF Data Rate sistem
+        #x_dr, y_dr = compute_cdf(ALL_DATARATES)
+        #x_dr_rand, y_dr_rand = compute_cdf(ALL_DATARATES_RAND)
+        figdrr, axdrr = plt.subplots()
+        #ax5.plot(x_dr, y_dr, label='DDPG (All Nodes)')
+        axdrr.plot(x_dr_rand, y_dr_rand, label='Random (All Nodes)')
+
+        # Tambahkan garis vertikal R_min
+        axdrr.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
+
+        axdrr.set_xlabel('Data Rate')
+        axdrr.set_ylabel('CDF')
+        axdrr.set_title('CDF of Data Rate Random of 10 Nodes')
+        axdrr.legend()
+        axdrr.grid(False)
+        figdrr.savefig("cdf_sistem_rate_RANDOM.png", dpi=300)
+
+        if opt.write:
+            writer.add_figure('CDF Data Rate Sistem Random', figdrr, global_step=st)
+            plt.close(figdrr)
 
         # Buat dataframe
         df = pd.DataFrame({
