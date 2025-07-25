@@ -97,7 +97,7 @@ def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
     return int(total_reward/3)
 
 def evaluate_policy(channel_gain, state, env, agent, turns=1):
-    env = GameState(30,7)
+    env = GameState(30,15)
     total_scores = 0
     total_scores_rand = 0 
     total_EE = 0
@@ -184,7 +184,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             total_EE     += info['EE']
             total_EE_rand +=info1['EE']
             total_power  += info['total_power']
-            total_power_rand +=7
+            total_power_rand +=15
 
             # update loop
             if step_count == MAX_STEPS:
