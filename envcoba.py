@@ -56,7 +56,7 @@ class GameState:
         next_intr=self.interferensi(power,next_channel_gain)
         sinr=self.hitung_sinr(channel_gain,intr,power)
         data_rate=self.hitung_data_rate(sinr)
-        count_data_ok = sum(1 for dr in data_rate if dr >= 0.152)
+        count_data_ok = sum(1 for dr in data_rate if dr >= 0.354)
         data_rate_constraint=[]
         for i in range(self.nodes):
             data_rate_constraint.append(2*self.step_function(0.12-data_rate[i]))
@@ -69,7 +69,7 @@ class GameState:
         # Condition 1: Budget exceeded
         fail_power = total_daya > self.p_max
 
-        rate_violation = np.sum(np.maximum(0.152 - data_rate, 0.0))
+        rate_violation = np.sum(np.maximum(0.354 - data_rate, 0.0))
         penalty_rate   = rate_violation
         #print(f'channel gain {channel_gain}')
         #print(f'data rate {data_rate}')
