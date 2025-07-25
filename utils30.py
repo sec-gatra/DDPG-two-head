@@ -184,7 +184,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             total_EE     += info['EE']
             total_EE_rand +=info1['EE']
             total_power  += info['total_power']
-            total_power_rand +=info1['total_power']
+            total_power_rand +=7
 
             # update loop
             if step_count == MAX_STEPS:
