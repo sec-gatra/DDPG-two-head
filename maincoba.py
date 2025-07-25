@@ -340,11 +340,20 @@ def main():
             writer.add_figure('CDF Data Rate Sistem Random', figdrr, global_step=st)
             plt.close(figdrr)
 
-                #data rate akurasi 
+                #data rate akurasi ddpg
         total_rate_lolos = np.sum(rate_lolos)
         total_node = env.nodes * 3000
         accuracy = total_rate_lolos * 100 / total_node
-        print(f'accuracy data rate {accuracy}, maks node lolos per iterasi : {np.max(rate_lolos)}, min node lolos per iterasi : {np.min(rate_lolos)}')
+        print(f'accuracy data rate ddpg {accuracy}, maks node lolos per iterasi : {np.max(rate_lolos)}, min node lolos per iterasi : {np.min(rate_lolos)}')
+        #data rate akurasi random
+        total_rate_lolos_rand = np.sum(rate_lolos_rand)
+        #total_node = env.nodes * 3000
+        accuracy_rand = total_rate_lolos_rand * 100 / total_node
+        print(f'accuracy data rate random {accuracy_rand}, maks node lolos per iterasi : {np.max(rate_lolos_rand)}, min node lolos per iterasi : {np.min(rate_lolos_rand)}')
+        
+        #totalenergi efisiensi 
+        print(f'total energi efisiensi ddpg {np.sum(EE_DDPG)}')
+        print(f'total energi efisiensi random {np.sum(EE_RAND)}')
 
         # Buat dataframe
         df = pd.DataFrame({
