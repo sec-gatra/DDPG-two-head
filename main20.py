@@ -102,7 +102,7 @@ def main():
         for i in range(len(channel_gains_from_csv1)):
         #for i in range(3000):
                             st+=1
-                            loc_eval= env.generate_positions() #lokasi untuk s_t
+                            #loc_eval= env.generate_positions() #lokasi untuk s_t
                             channel_gain_eval = channel_gains_from_csv1[i]
                             #print(channel_gain_eval)
                             #channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
@@ -170,7 +170,7 @@ def main():
         ax9.set_title('CDF Energy Efficiency of Random (10 nodes)')
         ax9.legend()
         ax9.grid(False)  # Menghilangkan grid
-        fig9.savefig("cdf_energy_efficiency_ddpg.png", dpi=300)
+        fig9.savefig("cdf_energy_efficiency_random.png", dpi=300)
         #     log figure
         if opt.write :
             writer.add_figure('CDF Energi Efisiensi Random', fig9, global_step=st)
@@ -222,7 +222,7 @@ def main():
             writer.add_figure('CDF Power random', figpr, global_step=st)
             plt.close(figpr)
         # 5) Plot CDF Data Rate sistem
-        R_min = 0.15
+        R_min = 0.074
         x_dr, y_dr = compute_cdf(ALL_DATARATES)
         x_dr_rand, y_dr_rand = compute_cdf(ALL_DATARATES_RAND)
         fig5, ax5 = plt.subplots()
@@ -292,6 +292,9 @@ def main():
         total_node = env.nodes * 3000
         accuracy = total_rate_lolos * 100 / total_node
         print(f'accuracy data rate {accuracy}, maks node lolos per iterasi : {np.max(rate_lolos)}, min node lolos per iterasi : {np.min(rate_lolos)}')
+
+        print(f'total energi efisiensi ddpg {np.sum(EE_DDPG)}')
+        print(f'total energi efisiensi random {np.sum(EE_RAND)}')
 
         # Buat dataframe
         df = pd.DataFrame({
