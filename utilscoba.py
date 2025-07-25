@@ -261,7 +261,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             print(f'DDPG power : {a}, reward :{r}, total power : {np.sum(a)}')
             print(f'random power : {a_rand}, reward :{r1}, total power : {np.sum(a_rand)}')
             count_data_ok=info['data_rate_pass']
-            count_data_ok_rand=info1['data_rate_pass_rand']
+            count_data_ok_rand=info1['data_rate_pass']
 
             dr1+=info['data_rate1']
             dr2+=info['data_rate2']
