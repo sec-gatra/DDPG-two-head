@@ -111,6 +111,8 @@ def main():
         st=0
         channel_gains_from_csv1 = np.load('channel_gains_from_csv.npy', allow_pickle=True)
         #for i in range(3000):
+        rate_lolos =[]
+        rate_lolos_rand = []
         for i in range(len(channel_gains_from_csv1)):
                             st+=1
                             loc_eval= env.generate_positions() #lokasi untuk s_t
@@ -119,6 +121,8 @@ def main():
                             state_eval,inf=eval_env.reset(channel_gain_eval)
                             state_eval = np.array(state_eval, dtype=np.float32)
                             result1 = evaluate_policy(channel_gain_eval,state_eval,eval_env, agent, turns=1)
+                            rate_lolos.append(result1['data_rate_lolos'])
+                            rate_lolos_rand.append(result1['data_rate_lolos_rand'])
                             for node_id in range(1, env.nodes+1):
                                 ALL_DATARATES_NODES[node_id - 1].append(result1[f'data_rate_{node_id}'])
                                 ALL_DATARATES.append(result1[f'data_rate_{node_id}'])
@@ -335,6 +339,12 @@ def main():
         if opt.write:
             writer.add_figure('CDF Data Rate Sistem Random', figdrr, global_step=st)
             plt.close(figdrr)
+
+                #data rate akurasi 
+        total_rate_lolos = np.sum(rate_lolos)
+        total_node = env.nodes * 3000
+        accuracy = total_rate_lolos * 100 / total_node
+        print(f'accuracy data rate {accuracy}, maks node lolos per iterasi : {np.max(rate_lolos)}, min node lolos per iterasi : {np.min(rate_lolos)}')
 
         # Buat dataframe
         df = pd.DataFrame({
