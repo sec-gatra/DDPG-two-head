@@ -17,7 +17,7 @@ class GameState:
         self.action_space = nodes
         self.p = np.random.uniform(0, 3, size=self.nodes)
         self.rng = np.random.default_rng()
-        self.Rmin = 0.048
+        self.Rmin = 0.08
     def sample_valid_power(self):
         rand = np.random.rand(self.nodes)
         rand /= np.sum(rand)
