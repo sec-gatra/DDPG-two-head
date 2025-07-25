@@ -97,14 +97,14 @@ def main():
     if opt.render:
         st=0
         rate_lolos=[]
-        #channel_gains_from_csv1 = np.load('channel_gains_from_csv.npy', allow_pickle=True)
-        for i in range((3000)):
-        #for i in range(len(channel_gains_from_csv1)):
+        channel_gains_from_csv1 = np.load('channel_gains_from_csv.npy', allow_pickle=True)
+        #for i in range((3000)):
+        for i in range(len(channel_gains_from_csv1)):
                             print(i)
                             st+=1
-                            loc_eval= env.generate_positions() #lokasi untuk s_t
-                            channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
-                            #channel_gain_eval = channel_gains_from_csv1[i]
+                            #loc_eval= env.generate_positions() #lokasi untuk s_t
+                            #channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
+                            channel_gain_eval = channel_gains_from_csv1[i]
                             #print(channel_gain_eval)
                             state_eval,a_prev,inf=eval_env.reset(channel_gain_eval)
                             state_eval = np.array(state_eval, dtype=np.float32)
