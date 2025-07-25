@@ -166,7 +166,7 @@ def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
             channel_gain = next_channel_gain
     return int(total_reward/3)
 def evaluate_policy(channel_gain, state, env, agent, turns=1):
-    env = GameState(10, 3)
+    env = GameState(10, 6)
     total_scores = 0
     total_scores_rand = 0 
     total_EE = 0
@@ -194,8 +194,8 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     dr9=0
     dr10=0
     # threshold constraint (contoh)
-    R_th = 0.152   # minimal data rate per UE [bit/s atau satuan yg kamu pakai]
-    P_th = 3      # maksimal total power [W atau satuan yg kamu pakai]
+    R_th = 0.354   # minimal data rate per UE [bit/s atau satuan yg kamu pakai]
+    P_th = 6      # maksimal total power [W atau satuan yg kamu pakai]
 
     # Counters untuk constraint
     count_data_ok  = 0
