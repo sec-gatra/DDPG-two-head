@@ -260,6 +260,8 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             s_next1, r1, dw1, tr1, info1 = env.step(a_rand, channel_gain, next_channel_gain)
             print(f'DDPG power : {a}, reward :{r}, total power : {np.sum(a)}')
             print(f'random power : {a_rand}, reward :{r1}, total power : {np.sum(a_rand)}')
+            count_data_ok=info['data_rate_pass']
+            count_data_ok_rand=info1['data_rate_pass_rand']
 
             dr1+=info['data_rate1']
             dr2+=info['data_rate2']
@@ -295,7 +297,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
                 info['data_rate9'],
                 info['data_rate10'],
             ]
-            count_data_ok = sum(1 for dr in data_rates if dr >= R_th)
+            #count_data_ok = sum(1 for dr in data_rates if dr >= R_th)
 
             #cek data rate untuk random 
             data_rates1 = [
@@ -310,7 +312,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
                 info1['data_rate9'],
                 info1['data_rate10'],
             ]
-            count_data_ok_rand = sum(1 for dr in data_rates1 if dr >= R_th)
+            #count_data_ok_rand = sum(1 for dr in data_rates1 if dr >= R_th)
             '''
             for i in range(env.nodes):
                 if data_rates[i] >= R_th :
@@ -364,6 +366,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
         'avg_EE_rand':       avg_EE_rand,
         'avg_power':    avg_power,
         'data_rate_lolos' : count_data_ok,
+        'data_rate_lolos_rand' : count_data_ok_rand,
         'avg_power_rand' : avg_power_rand,
         'pct_data_ok':  count_data_ok,
         'pct_data_ok_rand':  count_data_ok_rand,
