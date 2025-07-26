@@ -97,6 +97,7 @@ def main():
     if opt.render:
         st=0
         rate_lolos=[]
+        rate_lolos_rand=[]
         channel_gains_from_csv1 = np.load('channel_gains_from_csv.npy', allow_pickle=True)
         #channel_gains_from_csv2 = np.load('channel_gains_from_csv2.npy', allow_pickle=True)
         for i in range(len(channel_gains_from_csv1)):
@@ -110,6 +111,7 @@ def main():
                             state_eval = np.array(state_eval, dtype=np.float32)
                             result1 = evaluate_policy(channel_gain_eval,state_eval,eval_env, agent, turns=1)
                             rate_lolos.append(result1['data_rate_lolos'])
+                            rate_lolos_rand.append(result1['data_rate_lolos_rand'])
                             ALL_DATARATES.extend(result1['data_rate'])
                             ALL_DATARATES_RAND.extend(result1['data_rate_rand'])
                             EE_DDPG.append(result1['avg_EE'])
@@ -291,7 +293,12 @@ def main():
         total_rate_lolos = np.sum(rate_lolos)
         total_node = env.nodes * 3000
         accuracy = total_rate_lolos * 100 / total_node
+
+        #data rate rand akurasi
+        total_rate_lolos_rand = np.sum(rate_lolos_rand)
+        accuracy_rand = total_rate_lolos_rand * 100 / total_node
         print(f'accuracy data rate {accuracy}, maks node lolos per iterasi : {np.max(rate_lolos)}, min node lolos per iterasi : {np.min(rate_lolos)}')
+        print(f'accuracy data rate  {accuracy_rand}, maks node lolos per iterasi : {np.max(rate_lolos_rand)}, min node lolos per iterasi : {np.min(rate_lolos_rand)}')
 
         print(f'total energi efisiensi ddpg {np.sum(EE_DDPG)}')
         print(f'total energi efisiensi random {np.sum(EE_RAND)}')
