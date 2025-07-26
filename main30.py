@@ -97,10 +97,11 @@ def main():
     if opt.render:
         st=0
         rate_lolos=[]
+        rate_lolos_rand=[]
         channel_gains_from_csv1 = np.load('channel_gains_from_csv.npy', allow_pickle=True)
         #for i in range((3000)):
         for i in range(len(channel_gains_from_csv1)):
-                            print(i)
+                            #print(i)
                             st+=1
                             #loc_eval= env.generate_positions() #lokasi untuk s_t
                             #channel_gain_eval=env.generate_channel_gain(loc_eval) #channel gain untuk s_t
@@ -110,6 +111,7 @@ def main():
                             state_eval = np.array(state_eval, dtype=np.float32)
                             result1 = evaluate_policy(channel_gain_eval,state_eval,eval_env, agent, turns=1)
                             rate_lolos.append(result1['data_rate_lolos'])
+                            rate_lolos_rand.append(result1['data_rate_lolos_rand'])
                             #rate_lolos.append(result1['data_rate_lolos'])
                             ALL_DATARATES.extend(result1['data_rate'])
                             ALL_DATARATES_RAND.extend(result1['data_rate_rand'])
@@ -149,10 +151,10 @@ def main():
 
          # PLOT CDF EE ddpg onlu
         fig0, ax0 = plt.subplots()
-        ax0.plot(x_ddpg, y_ddpg, label='DDPG',linewidth=2.5)
+        ax0.plot(x_ddpg, y_ddpg, label='DDPG',linewidth=2.5, color = 'green')
         ax0.set_xlabel('Energy Efficiency')
         ax0.set_ylabel('CDF')
-        ax0.set_title('CDF Energy Efficiency of DDPG (10 nodes)')
+        ax0.set_title('CDF Energy Efficiency of DDPG (30 nodes)')
         ax0.legend()
         ax0.grid(False)  # Menghilangkan grid
         fig0.savefig("cdf_energy_efficiency_ddpg.png", dpi=300)
@@ -167,7 +169,7 @@ def main():
         ax9.plot(x_rand, y_rand, label = "RANDOM", linewidth = 2.5)
         ax9.set_xlabel('Energy Efficiency')
         ax9.set_ylabel('CDF')
-        ax9.set_title('CDF Energy Efficiency of Random (10 nodes)')
+        ax9.set_title('CDF Energy Efficiency of Random (30 nodes)')
         ax9.legend()
         ax9.grid(False)  # Menghilangkan grid
         fig9.savefig("cdf_energy_efficiency_random.png", dpi=300)
@@ -193,11 +195,11 @@ def main():
             plt.close(fig3)
                  # 3) Plot CDF power ddpg only
         figpd, axpd = plt.subplots()
-        axpd.plot(x_p, y_p, label='Power DDPG',linewidth=2.5)
+        axpd.plot(x_p, y_p, label='Power DDPG',linewidth=2.5,, color = 'green')
         #axpd.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5, linestyle='--')
         axpd.set_xlabel('Power')
         axpd.set_ylabel('CDF')
-        axpd.set_title('CDF POWER DDPG of 10 Nodes')
+        axpd.set_title('CDF POWER DDPG of 30 Nodes')
         axpd.legend()
         axpd.grid(False)  # Menghilangkan grid
         figpd.savefig("cdf_power_ddpg.png", dpi=300)
@@ -212,7 +214,7 @@ def main():
         axpr.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5)
         axpr.set_xlabel('Power')
         axpr.set_ylabel('CDF')
-        axpr.set_title('CDF POWER Random of 10 Nodes')
+        axpr.set_title('CDF POWER Random of 30 Nodes')
         axpr.legend()
         axpr.grid(False)  # Menghilangkan grid
         figpr.savefig("cdf_power_random.png", dpi=300)
@@ -221,7 +223,7 @@ def main():
             writer.add_figure('CDF Power random', figpr, global_step=st)
             plt.close(figpr)
         # 5) Plot CDF Data Rate sistem
-        R_min = 0.048
+        R_min = 0.08
         x_dr, y_dr = compute_cdf(ALL_DATARATES)
         x_dr_rand, y_dr_rand = compute_cdf(ALL_DATARATES_RAND)
         fig5, ax5 = plt.subplots()
@@ -247,7 +249,7 @@ def main():
         #x_dr, y_dr = compute_cdf(ALL_DATARATES)
         #x_dr_rand, y_dr_rand = compute_cdf(ALL_DATARATES_RAND)
         figdr, axdr = plt.subplots()
-        axdr.plot(x_dr, y_dr, label='DDPG (All Nodes)')
+        axdr.plot(x_dr, y_dr, label='DDPG (All Nodes)', color = 'green')
         #axde.plot(x_dr_rand, y_dr_rand, label='Random (All Nodes)', linestyle='--')
 
         # Tambahkan garis vertikal R_min
@@ -255,7 +257,7 @@ def main():
 
         axdr.set_xlabel('Data Rate')
         axdr.set_ylabel('CDF')
-        axdr.set_title('CDF of Data Rate DDPG of 10 Nodes')
+        axdr.set_title('CDF of Data Rate DDPG of 30 Nodes')
         axdr.legend()
         axdr.grid(False)
         figdr.savefig("cdf_sistem_rate_DDPG.png", dpi=300)
@@ -276,7 +278,7 @@ def main():
 
         axdrr.set_xlabel('Data Rate')
         axdrr.set_ylabel('CDF')
-        axdrr.set_title('CDF of Data Rate Random of 10 Nodes')
+        axdrr.set_title('CDF of Data Rate Random of 30 Nodes')
         axdrr.legend()
         axdrr.grid(False)
         figdrr.savefig("cdf_sistem_rate_RANDOM.png", dpi=300)
@@ -290,7 +292,13 @@ def main():
         total_rate_lolos = np.sum(rate_lolos)
         total_node = env.nodes * 3000
         accuracy = total_rate_lolos * 100 / total_node
+        total_rate_lolos_rand = np.sum(rate_lolos_rand)
+        accuracy_rand = total_rate_lolos_rand * 100 / total_node
         print(f'accuracy data rate {accuracy}, maks node lolos per iterasi : {np.max(rate_lolos)}, min node lolos per iterasi : {np.min(rate_lolos)}')
+        print(f'accuracy data rate random {accuracy_rand}, maks node lolos per iterasi : {np.max(rate_lolos_rand)}, min node lolos per iterasi : {np.min(rate_lolos_rand)}')
+        print(f'total energi efisiensi ddpg {np.sum(EE_DDPG)}')
+        print(f'total energi efisiensi random {np.sum(EE_RAND)}')
+
 
         
         
