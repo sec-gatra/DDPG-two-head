@@ -192,7 +192,7 @@ def main():
         ax9.set_title('CDF Energy Efficiency of Random (10 nodes)')
         ax9.legend()
         ax9.grid(False)  # Menghilangkan grid
-        fig9.savefig("cdf_energy_efficiency_ddpg.png", dpi=300)
+        fig9.savefig("cdf_energy_efficiency_random.png", dpi=300)
         #     log figure
         if opt.write :
             writer.add_figure('CDF Energi Efisiensi Random', fig9, global_step=st)
