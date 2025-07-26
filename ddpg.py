@@ -20,9 +20,12 @@ class DDPG_agent():
 		self.q_critic_target = copy.deepcopy(self.q_critic)
 
 		self.replay_buffer = ReplayBuffer(self.state_dim, self.action_dim, max_size=int(560000), dvc=self.dvc)
-		self.lambda_c     = 0.0      # multiplier awal
-    		self.eta_lambda   = 1e-3     # LR untuk update lambda
-    		self.cost_limit   = 5.0      # d = batas rata‐rata cost (misal 0)
+		#self.lambda_c     = 0.0      # multiplier awal
+    		#self.eta_lambda   = 1e-3     # LR untuk update lambda
+    		#self.cost_limit   = 5.0      # d = batas rata‐rata cost (misal 0)
+		self.lambda_c = 0
+		self.eta_lambda = 1e-3
+		self.cost_limit = 5
 
 		
 	def select_action(self, state, deterministic):
