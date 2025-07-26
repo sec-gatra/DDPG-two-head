@@ -123,6 +123,8 @@ class ReplayBuffer():
 		self.r = torch.zeros((max_size, 1) ,dtype=torch.float,device=self.dvc)
 		self.s_next = torch.zeros((max_size, state_dim) ,dtype=torch.float,device=self.dvc)
 		self.dw = torch.zeros((max_size, 1) ,dtype=torch.bool,device=self.dvc)
+		self.c      = torch.zeros((max_size, 1),            device=dvc)  # buffer untuk cost
+
 
 	def add(self, s, a, r, s_next, dw, cost):
 		#每次只放入一个时刻的数据
