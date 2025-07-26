@@ -43,7 +43,7 @@ class DDPG_agent():
 		# Compute the target Q
 		s, a, r, s_next, dw, c = self.replay_buffer.sample(self.batch_size)
 		E_cost = c.mean().item()
-		 self.lambda_c = max(0.0,self.lambda_c + self.eta_lambda * (E_cost - self.cost_limit))
+		self.lambda_c = max(0.0,self.lambda_c + self.eta_lambda * (E_cost - self.cost_limit))
 		with torch.no_grad():
 			#s, a, r, s_next, dw = self.replay_buffer.sample(self.batch_size)
 			
