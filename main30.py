@@ -195,7 +195,7 @@ def main():
             plt.close(fig3)
                  # 3) Plot CDF power ddpg only
         figpd, axpd = plt.subplots()
-        axpd.plot(x_p, y_p, label='Power DDPG',linewidth=2.5,, color = 'green')
+        axpd.plot(x_p, y_p, label='Power DDPG',linewidth=2.5, color = 'green')
         #axpd.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5, linestyle='--')
         axpd.set_xlabel('Power')
         axpd.set_ylabel('CDF')
