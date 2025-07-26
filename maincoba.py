@@ -171,7 +171,7 @@ def main():
             plt.close(fig)
                 # PLOT CDF EE ddpg onlu
         fig0, ax0 = plt.subplots()
-        ax0.plot(x_ddpg, y_ddpg, label='DDPG',linewidth=2.5)
+        ax0.plot(x_ddpg, y_ddpg, label='DDPG',linewidth=2.5, color = 'green')
         ax0.set_xlabel('Energy Efficiency')
         ax0.set_ylabel('CDF')
         ax0.set_title('CDF Energy Efficiency of DDPG (10 nodes)')
@@ -229,7 +229,7 @@ def main():
 
                 # 3) Plot CDF power ddpg only
         figpd, axpd = plt.subplots()
-        axpd.plot(x_p, y_p, label='Power DDPG',linewidth=2.5)
+        axpd.plot(x_p, y_p, label='Power DDPG',linewidth=2.5, color = 'green')
         #axpd.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5, linestyle='--')
         axpd.set_xlabel('Power')
         axpd.set_ylabel('CDF')
@@ -302,7 +302,7 @@ def main():
         #x_dr, y_dr = compute_cdf(ALL_DATARATES)
         #x_dr_rand, y_dr_rand = compute_cdf(ALL_DATARATES_RAND)
         figdr, axdr = plt.subplots()
-        axdr.plot(x_dr, y_dr, label='DDPG (All Nodes)')
+        axdr.plot(x_dr, y_dr, label='DDPG (All Nodes)', color = 'green')
         #axde.plot(x_dr_rand, y_dr_rand, label='Random (All Nodes)', linestyle='--')
 
         # Tambahkan garis vertikal R_min
