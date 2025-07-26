@@ -22,7 +22,7 @@ class DDPG_agent():
 		self.replay_buffer = ReplayBuffer(self.state_dim, self.action_dim, max_size=int(560000), dvc=self.dvc)
 		self.lambda_c     = 0.0      # multiplier awal
     		self.eta_lambda   = 1e-3     # LR untuk update lambda
-    		self.cost_limit   = 6.0      # d = batas rata‐rata cost (misal 0)
+    		self.cost_limit   = 5.0      # d = batas rata‐rata cost (misal 0)
 
 		
 	def select_action(self, state, deterministic):
