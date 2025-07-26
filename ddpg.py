@@ -20,6 +20,11 @@ class DDPG_agent():
 		self.q_critic_target = copy.deepcopy(self.q_critic)
 
 		self.replay_buffer = ReplayBuffer(self.state_dim, self.action_dim, max_size=int(560000), dvc=self.dvc)
+		    # setelah self.noise_proc = ...
+    		self.lambda_c     = 0.0      # multiplier awal
+    		self.eta_lambda   = 1e-3     # LR untuk update lambda
+    		self.cost_limit   = 6.0      # d = batas rata‐rata cost (misal 0)
+
 		
 	def select_action(self, state, deterministic):
 		with torch.no_grad():
@@ -36,14 +41,18 @@ class DDPG_agent():
 
 	def train(self):
 		# Compute the target Q
+		s, a, r, s_next, dw, c = self.replay_buffer.sample(self.batch_size)
+		E_cost = c.mean().item()
+		 self.lambda_c = max(0.0,self.lambda_c + self.eta_lambda * (E_cost - self.cost_limit))
 		with torch.no_grad():
-			s, a, r, s_next, dw = self.replay_buffer.sample(self.batch_size)
+			#s, a, r, s_next, dw = self.replay_buffer.sample(self.batch_size)
+			
 			target_a_next = self.actor_target(s_next)
 			#mask = (~dw).float().unsqueeze(1)
-			target_Q= self.q_critic_target(s_next, target_a_next)
-			#target_Q = r + self.gamma * mask * target_Q #ini ditambahin dw biar bagus kata gpt
-			#target_Q = r + self.gamma * target_Q  #dw: die or win
-			target_Q = r + (~dw) * self.gamma * target_Q
+			r_mod    = r - self.lambda_c * c
+           		target_Q = r_mod + (~dw) * self.gamma * target_Q
+			#target_Q= self.q_critic_target(s_next, target_a_next)
+			#target_Q = r + (~dw) * self.gamma * target_Q
 
 		# Get current Q estimates
 		current_Q = self.q_critic(s, a)
@@ -111,6 +120,17 @@ class ReplayBuffer():
 		self.s_next = torch.zeros((max_size, state_dim) ,dtype=torch.float,device=self.dvc)
 		self.dw = torch.zeros((max_size, 1) ,dtype=torch.bool,device=self.dvc)
 
+	def add(self, s, a, r, s_next, dw, cost):
+		#每次只放入一个时刻的数据
+		self.s[self.ptr] = torch.from_numpy(s).to(self.dvc)
+		self.a[self.ptr] = torch.from_numpy(a).to(self.dvc) # Note that a is numpy.array
+		self.r[self.ptr] = r
+		self.s_next[self.ptr] = torch.from_numpy(s_next).to(self.dvc)
+		self.dw[self.ptr] = dw
+		self.c[self.ptr]      = cost
+		self.ptr = (self.ptr + 1) % self.max_size #存满了又重头开始存
+		self.size = min(self.size + 1, self.max_size)
+	'''
 	def add(self, s, a, r, s_next, dw):
 		#每次只放入一个时刻的数据
 		self.s[self.ptr] = torch.from_numpy(s).to(self.dvc)
@@ -121,8 +141,17 @@ class ReplayBuffer():
 
 		self.ptr = (self.ptr + 1) % self.max_size #存满了又重头开始存
 		self.size = min(self.size + 1, self.max_size)
+	
 
 	def sample(self, batch_size):
 		ind = torch.randint(0, self.size, device=self.dvc, size=(batch_size,))
 		#print(ind)
 		return self.s[ind], self.a[ind], self.r[ind], self.s_next[ind], self.dw[ind]
+  	'''
+
+	def sample(self, batch_size):
+		idx = torch.randint(0, self.size, device=self.dvc, size=(batch_size,))
+	        return (
+	           self.s[idx], self.a[idx], self.r[idx], self.s_next[idx],
+	           self.dw[idx], self.c[idx]
+	        )
