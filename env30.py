@@ -69,7 +69,8 @@ class GameState:
         
         # Condition 1: Budget exceeded
         fail_power = total_daya > self.p_max
-        rate_violation = np.sum(np.maximum(self.Rmin - data_rate, 0.0))
+        #rate_violation = np.sum(np.maximum(self.Rmin - data_rate, 0.0))
+        rate_violation = int(np.sum(data_rate < self.Rmin))
         penalty_rate   = rate_violation
         #print(f'channel gain {channel_gain}')
         #print(f'data rate {data_rate}')
@@ -92,6 +93,7 @@ class GameState:
         #reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
         #reward = EE - 5*rate_violation - np.sum(power)
         reward = 150*EE - 10*rate_violation - 10*np.sum(power) + 10*total_rate
+      
         #reward = -rate_violation
         #reward = alpha*np.log(EE) - beta*rate_violation - zeta*np.sum(penalty_power)
 
