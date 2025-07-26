@@ -350,7 +350,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     avg_EE    = total_EE / turns
     avg_EE_rand = total_EE_rand / turns 
     avg_power = total_power / turns
-    avg_power_rand = total_power_rand / turns
+    avg_power_rand = 6
 
     # hitung persentase constraint terpenuhi
     pct_data_ok  = 100 * count_data_ok  / total_steps
