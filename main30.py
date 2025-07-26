@@ -364,15 +364,16 @@ def main():
                   
                     
                 done = (dw or tr)
-
-                agent.replay_buffer.add(np.array(s, dtype=np.float32), a, r, np.array(s_next, dtype=np.float32), dw)
+                cost = info['rate_violation']
+                #agent.replay_buffer.add(np.array(s, dtype=np.float32), a, r, np.array(s_next, dtype=np.float32), dw)
+                agent.replay_buffer.add(np.array(s, dtype=np.float32), a, r, np.array(s_next, dtype=np.float32), dw, cost)
                 s = s_next
                 a_prev = a
                 channel_gain=next_channel_gain
                 total_steps += 1
-
+                
                 '''train'''
-                if total_steps >= opt.random_steps:
+                if total_steps > opt.random_steps:
                     a_loss, c_loss = agent.train()
                     writer.add_scalar("Loss/Actor", a_loss, total_steps)
                     writer.add_scalar("Loss/Critic", c_loss, total_steps)
