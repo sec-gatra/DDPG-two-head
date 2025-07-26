@@ -149,10 +149,10 @@ def main():
 
                  # PLOT CDF EE ddpg onlu
         fig0, ax0 = plt.subplots()
-        ax0.plot(x_ddpg, y_ddpg, label='DDPG',linewidth=2.5)
+        ax0.plot(x_ddpg, y_ddpg, label='DDPG',linewidth=2.5, color = 'green')
         ax0.set_xlabel('Energy Efficiency')
         ax0.set_ylabel('CDF')
-        ax0.set_title('CDF Energy Efficiency of DDPG (10 nodes)')
+        ax0.set_title('CDF Energy Efficiency of DDPG (20 nodes)')
         ax0.legend()
         ax0.grid(False)  # Menghilangkan grid
         fig0.savefig("cdf_energy_efficiency_ddpg.png", dpi=300)
@@ -167,7 +167,7 @@ def main():
         ax9.plot(x_rand, y_rand, label = "RANDOM", linewidth = 2.5)
         ax9.set_xlabel('Energy Efficiency')
         ax9.set_ylabel('CDF')
-        ax9.set_title('CDF Energy Efficiency of Random (10 nodes)')
+        ax9.set_title('CDF Energy Efficiency of Random (20 nodes)')
         ax9.legend()
         ax9.grid(False)  # Menghilangkan grid
         fig9.savefig("cdf_energy_efficiency_random.png", dpi=300)
@@ -194,11 +194,11 @@ def main():
 
                          # 3) Plot CDF power ddpg only
         figpd, axpd = plt.subplots()
-        axpd.plot(x_p, y_p, label='Power DDPG',linewidth=2.5)
+        axpd.plot(x_p, y_p, label='Power DDPG',linewidth=2.5, color = 'green')
         #axpd.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5, linestyle='--')
         axpd.set_xlabel('Power')
         axpd.set_ylabel('CDF')
-        axpd.set_title('CDF POWER DDPG of 10 Nodes')
+        axpd.set_title('CDF POWER DDPG of 20 Nodes')
         axpd.legend()
         axpd.grid(False)  # Menghilangkan grid
         figpd.savefig("cdf_power_ddpg.png", dpi=300)
@@ -213,7 +213,7 @@ def main():
         axpr.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5)
         axpr.set_xlabel('Power')
         axpr.set_ylabel('CDF')
-        axpr.set_title('CDF POWER Random of 10 Nodes')
+        axpr.set_title('CDF POWER Random of 20 Nodes')
         axpr.legend()
         axpr.grid(False)  # Menghilangkan grid
         figpr.savefig("cdf_power_random.png", dpi=300)
@@ -248,7 +248,7 @@ def main():
         #x_dr, y_dr = compute_cdf(ALL_DATARATES)
         #x_dr_rand, y_dr_rand = compute_cdf(ALL_DATARATES_RAND)
         figdr, axdr = plt.subplots()
-        axdr.plot(x_dr, y_dr, label='DDPG (All Nodes)')
+        axdr.plot(x_dr, y_dr, label='DDPG (All Nodes)', color = 'green')
         #axde.plot(x_dr_rand, y_dr_rand, label='Random (All Nodes)', linestyle='--')
 
         # Tambahkan garis vertikal R_min
@@ -256,7 +256,7 @@ def main():
 
         axdr.set_xlabel('Data Rate')
         axdr.set_ylabel('CDF')
-        axdr.set_title('CDF of Data Rate DDPG of 10 Nodes')
+        axdr.set_title('CDF of Data Rate DDPG of 20 Nodes')
         axdr.legend()
         axdr.grid(False)
         figdr.savefig("cdf_sistem_rate_DDPG.png", dpi=300)
@@ -277,7 +277,7 @@ def main():
 
         axdrr.set_xlabel('Data Rate')
         axdrr.set_ylabel('CDF')
-        axdrr.set_title('CDF of Data Rate Random of 10 Nodes')
+        axdrr.set_title('CDF of Data Rate Random of 20 Nodes')
         axdrr.legend()
         axdrr.grid(False)
         figdrr.savefig("cdf_sistem_rate_RANDOM.png", dpi=300)
