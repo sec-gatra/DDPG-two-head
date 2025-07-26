@@ -20,8 +20,7 @@ class DDPG_agent():
 		self.q_critic_target = copy.deepcopy(self.q_critic)
 
 		self.replay_buffer = ReplayBuffer(self.state_dim, self.action_dim, max_size=int(560000), dvc=self.dvc)
-		    # setelah self.noise_proc = ...
-    		self.lambda_c     = 0.0      # multiplier awal
+		self.lambda_c     = 0.0      # multiplier awal
     		self.eta_lambda   = 1e-3     # LR untuk update lambda
     		self.cost_limit   = 6.0      # d = batas rata‐rata cost (misal 0)
 
