@@ -56,7 +56,7 @@ class GameState:
         next_intr=self.interferensi(power,next_channel_gain)
         sinr=self.hitung_sinr(channel_gain,intr,power)
         data_rate=self.hitung_data_rate(sinr)
-        count_data_ok = sum(1 for dr in data_rate if dr >= 0.354)
+        count_data_ok = sum(1 for dr in data_rate if dr >= 0.152)
         data_rate_constraint=[]
         for i in range(self.nodes):
             data_rate_constraint.append(2*self.step_function(0.12-data_rate[i]))
