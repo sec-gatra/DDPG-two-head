@@ -212,7 +212,7 @@ def main():
                 # 4) Plot CDF power random only
         figpr, axpr = plt.subplots()
         #axpr.plot(x_p, y_p, label='Power DDPG',linewidth=2.5)
-        axpr.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5)
+        axpr.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5, color = 'orange')
         axpr.set_xlabel('Power')
         axpr.set_ylabel('CDF')
         axpr.set_title('CDF POWER Random of 20 Nodes')
