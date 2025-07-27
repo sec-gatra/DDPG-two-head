@@ -43,21 +43,21 @@ class DDPG_agent():
 
 	def train(self):
 		# Compute the target Q
-		s, a, r, s_next, dw, c = self.replay_buffer.sample(self.batch_size)
-		E_cost = c.mean().item()
-		self.lambda_c = max(0.0,self.lambda_c + self.eta_lambda * (E_cost - self.cost_limit))
+		s, a, r, s_next, dw = self.replay_buffer.sample(self.batch_size)
+		#E_cost = c.mean().item()
+		#self.lambda_c = max(0.0,self.lambda_c + self.eta_lambda * (E_cost - self.cost_limit))
 		with torch.no_grad():
 			#s, a, r, s_next, dw = self.replay_buffer.sample(self.batch_size)
 			
 			target_a_next = self.actor_target(s_next)
 			#mask = (~dw).float().unsqueeze(1)
 			#r_mod    = r - self.lambda_c * c
-			r_mod = r - self.lambda_c * c
+			#r_mod = r - self.lambda_c * c
 			target_Q= self.q_critic_target(s_next, target_a_next)
-			target_Q = r_mod +(~dw) * self.gamma * target_Q
+			#target_Q = r_mod +(~dw) * self.gamma * target_Q
            		#target_Q = r_mod + (~dw) * self.gamma * target_Q
 			#target_Q= self.q_critic_target(s_next, target_a_next)
-			#target_Q = r + (~dw) * self.gamma * target_Q
+			target_Q = r + (~dw) * self.gamma * target_Q
 
 		# Get current Q estimates
 		current_Q = self.q_critic(s, a)
@@ -124,17 +124,17 @@ class ReplayBuffer():
 		self.r = torch.zeros((max_size, 1) ,dtype=torch.float,device=self.dvc)
 		self.s_next = torch.zeros((max_size, state_dim) ,dtype=torch.float,device=self.dvc)
 		self.dw = torch.zeros((max_size, 1) ,dtype=torch.bool,device=self.dvc)
-		self.c      = torch.zeros((max_size, 1),            device=dvc)  # buffer untuk cost
+		#self.c      = torch.zeros((max_size, 1),            device=dvc)  # buffer untuk cost
 
 
-	def add(self, s, a, r, s_next, dw, cost):
+	def add(self, s, a, r, s_next, dw)#, cost):
 		#每次只放入一个时刻的数据
 		self.s[self.ptr] = torch.from_numpy(s).to(self.dvc)
 		self.a[self.ptr] = torch.from_numpy(a).to(self.dvc) # Note that a is numpy.array
 		self.r[self.ptr] = r
 		self.s_next[self.ptr] = torch.from_numpy(s_next).to(self.dvc)
 		self.dw[self.ptr] = dw
-		self.c[self.ptr]      = cost
+		#self.c[self.ptr]      = cost
 		self.ptr = (self.ptr + 1) % self.max_size #存满了又重头开始存
 		self.size = min(self.size + 1, self.max_size)
 	'''
@@ -160,5 +160,5 @@ class ReplayBuffer():
 		idx = torch.randint(0, self.size, device=self.dvc, size=(batch_size,))
 		return(
 	           self.s[idx], self.a[idx], self.r[idx], self.s_next[idx],
-	           self.dw[idx], self.c[idx]
+	           self.dw[idx]#, self.c[idx]
 		)
