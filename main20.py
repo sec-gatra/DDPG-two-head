@@ -166,7 +166,7 @@ def main():
         #plot cdf EE random only
         fig9, ax9 = plt.subplots()
         #ax9.plot(x_, y_ddpg, label='DDPG',linewidth=2.5)
-        ax9.plot(x_rand, y_rand, label = "RANDOM", linewidth = 2.5)
+        ax9.plot(x_rand, y_rand, label = "RANDOM", linewidth = 2.5, color ='orange')
         ax9.set_xlabel('Energy Efficiency')
         ax9.set_ylabel('CDF')
         ax9.set_title('CDF Energy Efficiency of Random (20 nodes)')
