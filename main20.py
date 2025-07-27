@@ -136,8 +136,8 @@ def main():
         fig, ax = plt.subplots()
         ax.plot(x_ddpg, y_ddpg, label='DDPG', linewidth=2.5)
         ax.plot(x_rand, y_rand, label='Random', linestyle='--', linewidth=2.5)
-        ax.set_xlabel('Energy efficiency')
-        ax.set_ylabel('CDF')
+        ax.set_xlabel('Energy efficiency',fontsize=14)
+        ax.set_ylabel('CDF',fontsize=14)
         ax.set_title('CDF Energy efficiency of 20 Nodes')
         ax.legend()
         ax.grid(False)  # Menghilangkan grid
@@ -152,8 +152,8 @@ def main():
                  # PLOT CDF EE ddpg onlu
         fig0, ax0 = plt.subplots()
         ax0.plot(x_ddpg, y_ddpg, label='DDPG',linewidth=2.5, color = 'green')
-        ax0.set_xlabel('Energy Efficiency')
-        ax0.set_ylabel('CDF')
+        ax0.set_xlabel('Energy Efficiency',fontsize=14)
+        ax0.set_ylabel('CDF',fontsize=14)
         ax0.set_title('CDF Energy Efficiency of DDPG (20 nodes)')
         ax0.legend()
         ax0.grid(False)  # Menghilangkan grid
@@ -167,8 +167,8 @@ def main():
         fig9, ax9 = plt.subplots()
         #ax9.plot(x_, y_ddpg, label='DDPG',linewidth=2.5)
         ax9.plot(x_rand, y_rand, label = "RANDOM", linewidth = 2.5, color ='orange')
-        ax9.set_xlabel('Energy Efficiency')
-        ax9.set_ylabel('CDF')
+        ax9.set_xlabel('Energy Efficiency',fontsize=14)
+        ax9.set_ylabel('CDF',fontsize=14)
         ax9.set_title('CDF Energy Efficiency of Random (20 nodes)')
         ax9.legend()
         ax9.grid(False)  # Menghilangkan grid
@@ -183,8 +183,8 @@ def main():
         fig3, ax3 = plt.subplots()
         ax3.plot(x_p, y_p, label='Power DDPG')
         ax3.plot(x_p_rand, y_p_rand, label='Power Random')
-        ax3.set_xlabel('Power')
-        ax3.set_ylabel('CDF')
+        ax3.set_xlabel('Power',fontsize=14)
+        ax3.set_ylabel('CDF',fontsize=14)
         ax3.set_title('CDF POWER of 20 Nodes')
         ax3.legend()
         ax3.grid(False)
@@ -198,8 +198,8 @@ def main():
         figpd, axpd = plt.subplots()
         axpd.plot(x_p, y_p, label='Power DDPG',linewidth=2.5, color = 'green')
         #axpd.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5, linestyle='--')
-        axpd.set_xlabel('Power')
-        axpd.set_ylabel('CDF')
+        axpd.set_xlabel('Power',fontsize=14)
+        axpd.set_ylabel('CDF',fontsize=14)
         axpd.set_title('CDF POWER DDPG of 20 Nodes')
         axpd.legend()
         axpd.grid(False)  # Menghilangkan grid
@@ -213,8 +213,8 @@ def main():
         figpr, axpr = plt.subplots()
         #axpr.plot(x_p, y_p, label='Power DDPG',linewidth=2.5)
         axpr.plot(x_p_rand, y_p_rand, label='Power Random',linewidth=2.5, color = 'orange')
-        axpr.set_xlabel('Power')
-        axpr.set_ylabel('CDF')
+        axpr.set_xlabel('Power',fontsize=14)
+        axpr.set_ylabel('CDF',fontsize=14)
         axpr.set_title('CDF POWER Random of 20 Nodes')
         axpr.legend()
         axpr.grid(False)  # Menghilangkan grid
@@ -235,8 +235,8 @@ def main():
         ax5.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
 
         # Tambahkan panah horizontal untuk menunjukkan gap di CDF 0.5
-        ax5.set_xlabel('Data Rate')
-        ax5.set_ylabel('CDF')
+        ax5.set_xlabel('Data Rate',fontsize=14)
+        ax5.set_ylabel('CDF',fontsize=14)
         ax5.set_title('CDF of Data Rate of 20 nodes')
         ax5.legend()
         ax5.grid(False)
@@ -256,8 +256,8 @@ def main():
         # Tambahkan garis vertikal R_min
         axdr.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
 
-        axdr.set_xlabel('Data Rate')
-        axdr.set_ylabel('CDF')
+        axdr.set_xlabel('Data Rate',fontsize=14)
+        axdr.set_ylabel('CDF',fontsize=14)
         axdr.set_title('CDF of Data Rate DDPG of 20 Nodes')
         axdr.legend()
         axdr.grid(False)
@@ -277,8 +277,8 @@ def main():
         # Tambahkan garis vertikal R_min
         axdrr.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
 
-        axdrr.set_xlabel('Data Rate')
-        axdrr.set_ylabel('CDF')
+        axdrr.set_xlabel('Data Rate',fontsize=14)
+        axdrr.set_ylabel('CDF',fontsize=14)
         axdrr.set_title('CDF of Data Rate Random of 20 Nodes')
         axdrr.legend()
         axdrr.grid(False)
