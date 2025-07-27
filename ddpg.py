@@ -53,6 +53,7 @@ class DDPG_agent():
 			#mask = (~dw).float().unsqueeze(1)
 			#r_mod    = r - self.lambda_c * c
 			r_mod = r - self.lambda_c * c
+			target_Q= self.q_critic_target(s_next, target_a_next)
 			target_Q = r_mod +(~dw) * self.gamma * target_Q
            		#target_Q = r_mod + (~dw) * self.gamma * target_Q
 			#target_Q= self.q_critic_target(s_next, target_a_next)
