@@ -378,7 +378,8 @@ def main():
                     writer.add_scalar("Loss/Actor", a_loss, total_steps)
                     writer.add_scalar("Loss/Critic", c_loss, total_steps)
                     with torch.no_grad():
-                        s_batch, a_batch, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
+                        #s_batch, a_batch, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
+                        s_batch, a_batch, _, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
                         q_val = agent.q_critic(s_batch, a_batch).mean().item()
                         writer.add_scalar("Q_value/Mean", q_val, total_steps)
                     # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, actor_loss:{a_loss}')
