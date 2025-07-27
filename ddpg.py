@@ -24,7 +24,7 @@ class DDPG_agent():
     		#self.eta_lambda   = 1e-3     # LR untuk update lambda
     		#self.cost_limit   = 5.0      # d = batas rata‐rata cost (misal 0)
 		self.lambda_c = 0
-		self.eta_lambda = 1e-3
+		self.eta_lambda = 1e-6
 		self.cost_limit = 5
 
 		
