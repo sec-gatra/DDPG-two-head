@@ -326,9 +326,9 @@ def main():
         save2=[]
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
             #lr_steps+=1
-            #if lr_steps==sepertiga_eps :
-            #    opt.a_lr=0.3 * opt.a_lr
-            #    opt.c_lr=0.3 * opt.c_lr
+            if total_steps%2000==0 :
+                opt.a_lr=0.8 * opt.a_lr
+                opt.c_lr=0.8 * opt.c_lr
             #    lr_steps=0
             #    opt.noise -=0.001
 
