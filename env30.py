@@ -66,6 +66,7 @@ class GameState:
         total_daya=np.sum(power)
         total_rate  = np.sum(data_rate)
         fail_power = total_daya > self.p_max
+        penalty_power = max(0, np.sum(power)-self.p_max)
         
         # Condition 1: Budget exceeded
         fail_power = total_daya > self.p_max
@@ -79,7 +80,7 @@ class GameState:
         
         # Koefisien penalty rate tergantung EE
         k_dynamic = k0 + alpha * EE
-        reward = 1.5*EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate
+        reward = 1.5*EE - k_dynamic * penalty_rate - beta * penalty_power +  gammas*total_rate
         dw = bool(fail_power)
 
         info = {
