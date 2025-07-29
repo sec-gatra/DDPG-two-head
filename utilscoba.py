@@ -25,24 +25,23 @@ class Actor(nn.Module):
             nn.Linear(net_width//2, net_width//4),
             nn.ReLU(),
             nn.LayerNorm(net_width//4),
-            nn.Linear(net_width//4, net_width//8),          # NEW LAYER 💥
-            nn.ReLU(),
-            nn.LayerNorm(net_width//8),
         )
         # two heads
-        self.dist_head  = nn.Linear(net_width//8, action_dim)  # adjusted
-        self.scale_head = nn.Linear(net_width//8, 1)           # adjusted
-
+        #self.dist_head  = nn.Linear(net_width//4, action_dim)  # adjusted
+        #self.scale_head = nn.Linear(net_width//4, 1)           # adjusted
+        self.power_head = nn.Linear(net_width//4,action_dim)
         self.maxaction = maxaction
 
     def forward(self, state):
         x = self.net(state)
-        logits = self.dist_head(x)
-        dist   = F.softmax(logits, dim=-1)
+        #logits = self.dist_head(x)
+        #dist   = F.softmax(logits, dim=-1)
 
-        scale  = torch.sigmoid(self.scale_head(x)).squeeze(-1)
-        total_power = scale * self.maxaction
-        return dist * total_power.unsqueeze(-1)
+        #scale  = torch.sigmoid(self.scale_head(x)).squeeze(-1)
+        #total_power = scale * self.maxaction
+        power=torch.sigmoid(self.power_head(x))*self.maxaction
+        #return dist * total_power.unsqueeze(-1)
+        return power
 
 
 
@@ -58,18 +57,18 @@ class Q_Critic(nn.Module):
         self.l3 = nn.Linear(net_width//2, net_width//4)
         self.ln3 = nn.LayerNorm(net_width//4)
 
-        self.l4 = nn.Linear(net_width//4, net_width//8)         # NEW LAYER 💥
-        self.ln4 = nn.LayerNorm(net_width//8)
+        #self.l4 = nn.Linear(net_width//4, net_width//8)         # NEW LAYER 💥
+        #self.ln4 = nn.LayerNorm(net_width//8)
 
-        self.l5 = nn.Linear(net_width//8, 1)  # final Q-value
+        self.l4 = nn.Linear(net_width//4, 1)  # final Q-value
 
     def forward(self, state, action):
         x = F.relu(self.ln1(self.l1(state)))
         x = torch.cat([x, action], dim=-1)
         x = F.relu(self.ln2(self.l2(x)))
         x = F.relu(self.ln3(self.l3(x)))
-        x = F.relu(self.ln4(self.l4(x)))                      # NEW LINE
-        q = self.l5(x)
+        #x = F.relu(self.ln4(self.l4(x)))                      # NEW LINE
+        q = self.l4(x)
         return q
 '''
 class Actor(nn.Module):
