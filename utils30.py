@@ -139,7 +139,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             a = agent.select_action(state, deterministic=True)
             #a=env.sample_valid_power()
             #random_allocation 
-            a_rand=env.sample_valid_power()
+            a_rand=env.sample_valid_power2()
             # generate next state
             next_loc         = env.generate_positions()
             next_channel_gain= env.generate_channel_gain(next_loc)
