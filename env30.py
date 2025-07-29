@@ -219,7 +219,7 @@ class GameState:
 
     def hitung_data_rate(self, sinr):
         sinr = np.maximum(sinr, 0)  # jika ada yang negatif, dibatasi 0
-        return np.log(1 + sinr)
+        return np.log2(1 + sinr)
 
     def hitung_efisiensi_energi(self, power, data_rate):
         """Menghitung efisiensi energi total"""
