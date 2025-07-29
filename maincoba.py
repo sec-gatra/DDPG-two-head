@@ -475,11 +475,11 @@ def main():
                         save2.append(int(total_steps))
                         #ee.append(info['EE'])
                         #datret.append(info['data_rate_pass'])
-                    writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
-                    writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
+                    writer.add_scalar('reward_training', result["avg_score"], global_step=total_steps)
+                    writer.add_scalar('reward_train', result["reward_train"], global_step=total_steps)
                     writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
-                    print(f'EE : {result['avg_EE']}')
-                    print(f'data rate lolos : {result['data_rate_lolos']}')
+                    print(f'EE : {result["avg_EE"]}')
+                    print(f'data rate lolos : {result["data_rate_lolos"]}')
                     print(f'steps : {total_steps}')
 
 
