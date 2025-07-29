@@ -166,7 +166,7 @@ def evaluate_policy_reward(channel_gain, state, env, agent, turns=3):
             channel_gain = next_channel_gain
     return int(total_reward/3)
 def evaluate_policy(channel_gain, state, env, agent, turns=1):
-    env = GameState(10, 6)
+    env = GameState(10, 3)
     total_scores = 0
     total_scores_rand = 0 
     total_EE = 0
