@@ -223,7 +223,7 @@ def main():
             writer.add_figure('CDF Power random', figpr, global_step=st)
             plt.close(figpr)
         # 5) Plot CDF Data Rate sistem
-        R_min = 0.08
+        R_min = 0.048
         x_dr, y_dr = compute_cdf(ALL_DATARATES)
         x_dr_rand, y_dr_rand = compute_cdf(ALL_DATARATES_RAND)
         fig5, ax5 = plt.subplots()
@@ -364,9 +364,9 @@ def main():
                   
                     
                 done = (dw or tr)
-                cost = info['rate_violation']
+                #cost = info['rate_violation']
                 #agent.replay_buffer.add(np.array(s, dtype=np.float32), a, r, np.array(s_next, dtype=np.float32), dw)
-                agent.replay_buffer.add(np.array(s, dtype=np.float32), a, r, np.array(s_next, dtype=np.float32), dw, cost)
+                agent.replay_buffer.add(np.array(s, dtype=np.float32), a, r, np.array(s_next, dtype=np.float32), dw)
                 s = s_next
                 a_prev = a
                 channel_gain=next_channel_gain
@@ -379,7 +379,7 @@ def main():
                     writer.add_scalar("Loss/Critic", c_loss, total_steps)
                     with torch.no_grad():
                         #s_batch, a_batch, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
-                        s_batch, a_batch, _, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
+                        s_batch, a_batch, _, _, _= agent.replay_buffer.sample(opt.batch_size)
                         q_val = agent.q_critic(s_batch, a_batch).mean().item()
                         writer.add_scalar("Q_value/Mean", q_val, total_steps)
                     # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, actor_loss:{a_loss}')
