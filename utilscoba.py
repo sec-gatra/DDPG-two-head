@@ -334,8 +334,8 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             total_scores_rand+=r1
             total_EE     += info['EE']
             total_EE_rand +=info1['EE']
-            total_power  += info['total_power']
-            total_power_rand +=info1['total_power']
+            total_power  += np.sum(a)
+            total_power_rand +=np.sum(a_rand)
 
             # update loop
             if step_count == MAX_STEPS:
@@ -350,7 +350,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
     avg_EE    = total_EE / turns
     avg_EE_rand = total_EE_rand / turns 
     avg_power = total_power / turns
-    avg_power_rand = 6
+    avg_power_rand = total_power_rand/turns
 
     # hitung persentase constraint terpenuhi
     pct_data_ok  = 100 * count_data_ok  / total_steps
