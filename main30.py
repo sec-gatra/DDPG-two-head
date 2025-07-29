@@ -46,8 +46,8 @@ def main():
     BrifEnvName = ['6G', 'LLdV2', 'Humanv4', 'HCv4','BWv3', 'BWHv3']
     
     # Build Env
-    env = GameState(30,15)
-    eval_env = GameState(30,15)
+    env = GameState(30,1)
+    eval_env = GameState(30,1)
     opt.state_dim = env.observation_space
     opt.action_dim = env.action_space
     opt.max_action = env.p_max   #remark: action space【-max,max】
