@@ -80,7 +80,7 @@ class GameState:
         
         # Koefisien penalty rate tergantung EE
         k_dynamic = k0 + alpha * EE
-        reward = 1.5*EE - k_dynamic * penalty_rate - beta * penalty_power +  gammas*total_rate
+        reward = 2*EE - k_dynamic * penalty_rate - beta * penalty_power +  gammas*total_rate
         dw = bool(fail_power)
 
         info = {
