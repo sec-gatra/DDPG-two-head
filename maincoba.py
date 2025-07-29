@@ -478,18 +478,10 @@ def main():
                     writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
                     writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
                     writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
-                    if total_steps == opt.Max_train_steps :
-                        for i in range(60000):
-                            if i % 2000 == 0:
-                                loc_extend= env.generate_positions() #lokasi untuk s_t
-                                channel_gain_extend=env.generate_channel_gain(loc_extend) #channel gain untuk s_t
-                                state_extend,inf=eval_env.reset(channel_gain_extend)
-                                state_extend = np.array(state_extend, dtype=np.float32)
-                                result_reward2 = evaluate_policy_reward(channel_gain_extend,state_extend,eval_env, agent, turns=3)
-                                writer.add_scalar('reward training ddpg', result_reward2, global_step=total_steps+i)
-                            
+                    print(f'EE : {result['avg_EE']}')
+                    print(f'data rate lolos : {result['data_rate_lolos']}')
+                    print(f'steps : {total_steps}')
 
-                        
 
                     #print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, data rate : {result["pct_data_ok"]}')
 
