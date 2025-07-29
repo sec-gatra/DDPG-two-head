@@ -17,7 +17,7 @@ class GameState:
         self.action_space = nodes
         self.p = np.random.uniform(0, 3, size=self.nodes)
         self.rng = np.random.default_rng()
-        self.Rmin = 0.048
+        self.Rmin = 0.08
     def sample_valid_power(self):
         rand = np.random.rand(self.nodes)
         rand /= np.sum(rand)
@@ -69,39 +69,17 @@ class GameState:
         
         # Condition 1: Budget exceeded
         fail_power = total_daya > self.p_max
-        #rate_violation = np.sum(np.maximum(self.Rmin - data_rate, 0.0))
         rate_violation = int(np.sum(data_rate < self.Rmin))
         penalty_rate   = rate_violation
-        #print(f'channel gain {channel_gain}')
-        #print(f'data rate {data_rate}')
-        #print(f'EE {EE}')
-        # Parameter dinamis
-
-
         # 2) Power violation: only when total_power > p_max
-        power_violation = max(0.0, total_daya - self.p_max)
-        penalty_power   = 0.1 * power_violation
-        k0 = 5           # Base penalty rate weight
-        alpha = 1        # Semakin tinggi EE, semakin berat penalty rate
-        beta = 2        # Penalti untuk total daya
+        k0 = 10           # Base penalty rate weight
+        alpha = 0.1       # Semakin tinggi EE, semakin berat penalty rate
+        beta = 0.5        # Penalti untuk total daya
         gammas = 1         # Penguat untuk sum-rate
         
         # Koefisien penalty rate tergantung EE
         k_dynamic = k0 + alpha * EE
-        #fairness_penalty = np.std(data_rate)
-        # Reward formula dinamis
-        #reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate #- 10 * fairness_penalty
-        #reward = EE - 5*rate_violation - np.sum(power)
-        #reward = 150*EE - 10*rate_violation - 10*np.sum(power) + 10*total_rate
-        reward = EE - 5*rate_violation - power_violation
-        #reward = -rate_violation
-        #reward = alpha*np.log(EE) - beta*rate_violation - zeta*np.sum(penalty_power)
-
-        # Condition 2: Any data rate below threshold
-        #min_rate = 0.5
-        #fail_rate = np.any(data_rate < min_rate)
-        
-        # Final done flag for “dead/win”
+        reward = EE - k_dynamic * penalty_rate - beta * total_daya +  gammas*total_rate
         dw = bool(fail_power)
 
         info = {
