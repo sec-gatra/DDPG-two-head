@@ -74,7 +74,7 @@ class GameState:
         # 2) Power violation: only when total_power > p_max
         k0 = 10           # Base penalty rate weight
         alpha = 0.1       # Semakin tinggi EE, semakin berat penalty rate
-        beta = 0.5        # Penalti untuk total daya
+        beta = 5        # Penalti untuk total daya
         gammas = 1         # Penguat untuk sum-rate
         
         # Koefisien penalty rate tergantung EE
