@@ -248,7 +248,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             
 
             #random_allocation 
-            a_rand=env.sample_valid_power()
+            a_rand=env.sample_valid_power2()
             
 
             # generate next state
