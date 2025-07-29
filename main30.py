@@ -46,8 +46,8 @@ def main():
     BrifEnvName = ['6G', 'LLdV2', 'Humanv4', 'HCv4','BWv3', 'BWHv3']
     
     # Build Env
-    env = GameState(30,15)
-    eval_env = GameState(30,15)
+    env = GameState(30,10)
+    eval_env = GameState(30,10)
     opt.state_dim = env.observation_space
     opt.action_dim = env.action_space
     opt.max_action = env.p_max   #remark: action space【-max,max】
@@ -325,12 +325,12 @@ def main():
         save=[]
         save2=[]
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
-            lr_steps+=1
-            if lr_steps==sepertiga_eps :
-                opt.a_lr=0.3 * opt.a_lr
-                opt.c_lr=0.3 * opt.c_lr
-                lr_steps=0
-                opt.noise -=0.001
+            #lr_steps+=1
+            #if lr_steps==sepertiga_eps :
+            #    opt.a_lr=0.3 * opt.a_lr
+            #    opt.c_lr=0.3 * opt.c_lr
+            #    lr_steps=0
+            #    opt.noise -=0.001
 
             loc= env.generate_positions() #lokasi untuk s_t
             channel_gain=env.generate_channel_gain(loc) #channel gain untuk s_t
