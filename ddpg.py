@@ -20,12 +20,6 @@ class DDPG_agent():
 		self.q_critic_target = copy.deepcopy(self.q_critic)
 
 		self.replay_buffer = ReplayBuffer(self.state_dim, self.action_dim, max_size=int(560000), dvc=self.dvc)
-		#self.lambda_c     = 0.0      # multiplier awal
-    		#self.eta_lambda   = 1e-3     # LR untuk update lambda
-    		#self.cost_limit   = 5.0      # d = batas rata‐rata cost (misal 0)
-		self.lambda_c = 0
-		self.eta_lambda = 1e-6
-		self.cost_limit = 5
 
 		
 	def select_action(self, state, deterministic):
@@ -42,21 +36,10 @@ class DDPG_agent():
 				return np.clip(a + noise, 0.0000001, self.max_action+0.5)
 
 	def train(self):
-		# Compute the target Q
-		s, a, r, s_next, dw = self.replay_buffer.sample(self.batch_size)
-		#E_cost = c.mean().item()
-		#self.lambda_c = max(0.0,self.lambda_c + self.eta_lambda * (E_cost - self.cost_limit))
 		with torch.no_grad():
-			#s, a, r, s_next, dw = self.replay_buffer.sample(self.batch_size)
-			
+			s, a, r, s_next, dw = self.replay_buffer.sample(self.batch_size)
 			target_a_next = self.actor_target(s_next)
-			#mask = (~dw).float().unsqueeze(1)
-			#r_mod    = r - self.lambda_c * c
-			#r_mod = r - self.lambda_c * c
 			target_Q= self.q_critic_target(s_next, target_a_next)
-			#target_Q = r_mod +(~dw) * self.gamma * target_Q
-           		#target_Q = r_mod + (~dw) * self.gamma * target_Q
-			#target_Q= self.q_critic_target(s_next, target_a_next)
 			target_Q = r + (~dw) * self.gamma * target_Q
 
 		# Get current Q estimates
@@ -70,7 +53,7 @@ class DDPG_agent():
 		q_loss.backward()
 
 			# Gradient clipping for critic
-		clip_grad_norm_(self.q_critic.parameters(), max_norm=1.0)
+		#clip_grad_norm_(self.q_critic.parameters(), max_norm=1.0)
 
 		self.q_critic_optimizer.step()
 
@@ -78,21 +61,21 @@ class DDPG_agent():
 		self.actor_optimizer.zero_grad()
 		
 		# Matikan grad pada critic
-		for p in self.q_critic.parameters():
-		    p.requires_grad_(False)
+		#for p in self.q_critic.parameters():
+		#    p.requires_grad_(False)
 		a_loss = -self.q_critic(s, self.actor(s)).mean()
 		# Backprop dari actor loss
 		a_loss.backward()
 		
 		# Clip grad pada actor
-		clip_grad_norm_(self.actor.parameters(), max_norm=1.0)
+		#clip_grad_norm_(self.actor.parameters(), max_norm=1.0)
 		
 		# Update actor
 		self.actor_optimizer.step()
 		
 		# Hidupkan lagi grad pada critic
-		for p in self.q_critic.parameters():
-		    p.requires_grad_(True)
+		#for p in self.q_critic.parameters():
+		#    p.requires_grad_(True)
 
 		# Update the frozen target models
 		with torch.no_grad():
