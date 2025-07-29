@@ -310,7 +310,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             # aksi deterministik
             a = agent.select_action(state, deterministic=True)
             #random_allocation 
-            a_rand=env.sample_valid_power2()
+            a_rand=env.sample_valid_power()
             # generate next state
             next_loc         = env.generate_positions()
             next_channel_gain= env.generate_channel_gain(next_loc)
@@ -339,8 +339,8 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             total_scores_rand+=r1
             total_EE     += info['EE']
             total_EE_rand +=info1['EE']
-            total_power  += info['total_power']
-            total_power_rand +=info1['total_power']
+            total_power  += np.sum(a)
+            total_power_rand +=np.sum(a_rand)
 
             # update loop
             if step_count == MAX_STEPS:
