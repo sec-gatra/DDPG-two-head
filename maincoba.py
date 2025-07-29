@@ -78,6 +78,8 @@ def main():
     data_rate_7 =[]
     data_rate_10 =[]
     CHANNEL_GAINS=[]
+    reward=[]
+    reward_rand=[]
     
     # Seed Everything
     env_seed = opt.seed
@@ -136,6 +138,8 @@ def main():
                             CHANNEL_GAINS.append(channel_gain_eval.copy()) 
                             EE_DDPG.append(result1['avg_EE'])
                             EE_RAND.append(result1['avg_EE_rand'])
+                            reward.append(result1['avg_score'])
+                            reward_rand.append(result1['avg_score_rand'])
                             RATE_SUCCESS.append(result1['pct_data_ok'])
                             RATE_SUCCESS_RAND.append(result1['pct_data_ok_rand'])
                             POWER_DDPG.append(result1['avg_power'])
@@ -354,6 +358,10 @@ def main():
         #totalenergi efisiensi 
         print(f'total energi efisiensi ddpg {np.sum(EE_DDPG)}')
         print(f'total energi efisiensi random {np.sum(EE_RAND)}')
+
+                #total reward
+        print(f'total reward ddpg {np.sum(reward)}')
+        print(f'total reward random {np.sum(reward_rand)}')
 
         # Buat dataframe
         df = pd.DataFrame({
