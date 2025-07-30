@@ -425,7 +425,7 @@ def main():
                 next_loc= env.generate_positions() #lokasi untuk s_t
                 next_channel_gain=env.generate_channel_gain(next_loc) #channel gain untuk s_t
                 s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
-                if info['data_rate_pass']>= 0.8*env.nodes and info['total_power'] <= P :
+                if info['data_rate_pass']>= 0.8*env.nodes and info['total_power'] <= P and total_steps > opt.random_steps :
                         opt.a_lr=opt.a_lr * 0.1
                         opt.c_lr=opt.c_lr * 0.1
                         P-=0.5*P
