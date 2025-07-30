@@ -425,10 +425,6 @@ def main():
                 next_loc= env.generate_positions() #lokasi untuk s_t
                 next_channel_gain=env.generate_channel_gain(next_loc) #channel gain untuk s_t
                 s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
-                if info['data_rate_pass']>= 0.8*env.nodes and info['total_power'] <= P and total_steps > opt.random_steps :
-                        opt.a_lr=opt.a_lr * 0.1
-                        opt.c_lr=opt.c_lr * 0.1
-                        P-=0.5*P
                     
                 writer.add_scalar("Reward iterasi", r, total_steps)
                 if total_steps > opt.random_steps:
@@ -477,6 +473,10 @@ def main():
                     state_eval = np.array(state_eval, dtype=np.float32)
                     result = evaluate_policy(channel_gain,state_eval,eval_env, agent, turns=1)
                     result_reward = evaluate_policy_reward(channel_gain,state_eval,eval_env, agent, turns=3)
+                    if result['data_rate_lolos']>= 0.8*env.nodes and result['avg_power'] <= P and total_steps > opt.random_steps :
+                        opt.a_lr=opt.a_lr * 0.1
+                        opt.c_lr=opt.c_lr * 0.1
+                        P-=0.5*P
                     if result['avg_EE'] >= 30 and result['data_rate_lolos']>=0.8*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
