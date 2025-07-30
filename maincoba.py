@@ -395,7 +395,7 @@ def main():
         P = 1
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
             lr_steps+=1
-            if total_steps%100000==0 :
+            if total_steps%10000==0 :
                 opt.a_lr=0.3 * opt.a_lr
                 opt.c_lr=0.3 * opt.c_lr
                 opt.noise=opt.noise-0.1
