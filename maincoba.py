@@ -471,6 +471,8 @@ def main():
                 #if total_steps == opt.Max_train_steps:
                     #st=0
                     #for i in range(200):
+                    print(f'learning rate actor : {opt.a_lr}')
+                    print(f'learning rate critic : {opt.c_lr}')
                     state_eval,inf=eval_env.reset(channel_gain)
                     state_eval = np.array(state_eval, dtype=np.float32)
                     result = evaluate_policy(channel_gain,state_eval,eval_env, agent, turns=1)
