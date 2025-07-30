@@ -394,12 +394,12 @@ def main():
         datret=[]
         P = 1
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
-            #lr_steps+=1
-            #if lr_steps==sepertiga_eps :
-            #    opt.a_lr=0.3 * opt.a_lr
-            #    opt.c_lr=0.3 * opt.c_lr
-            #    opt.noise=opt.noise-0.1
-            #    lr_steps=0
+            lr_steps+=1
+            if lr_steps==sepertiga_eps :
+                opt.a_lr=0.3 * opt.a_lr
+                opt.c_lr=0.3 * opt.c_lr
+                opt.noise=opt.noise-0.1
+                lr_steps=0
             #if total_steps >= 198000 :
             #    opt.a_lr=0
             #    opt.c_lr=0
@@ -473,10 +473,10 @@ def main():
                     state_eval = np.array(state_eval, dtype=np.float32)
                     result = evaluate_policy(channel_gain,state_eval,eval_env, agent, turns=1)
                     result_reward = evaluate_policy_reward(channel_gain,state_eval,eval_env, agent, turns=3)
-                    if result['data_rate_lolos']>= 0.8*env.nodes and result['avg_power'] <= P and total_steps > opt.random_steps :
-                        opt.a_lr=opt.a_lr * 0.1
-                        opt.c_lr=opt.c_lr * 0.1
-                        P-=0.5*P
+                    #if result['data_rate_lolos']>= 0.8*env.nodes and result['avg_power'] <= P and total_steps > opt.random_steps :
+                    #    opt.a_lr=opt.a_lr * 0.1
+                    #    opt.c_lr=opt.c_lr * 0.1
+                    #    P-=0.5*P
                     if result['avg_EE'] >= 30 and result['data_rate_lolos']>=0.8*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
