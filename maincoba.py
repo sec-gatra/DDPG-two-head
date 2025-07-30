@@ -392,6 +392,7 @@ def main():
         save2=[]
         ee=[]
         datret=[]
+        P = 1
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
             #lr_steps+=1
             #if lr_steps==sepertiga_eps :
@@ -424,6 +425,11 @@ def main():
                 next_loc= env.generate_positions() #lokasi untuk s_t
                 next_channel_gain=env.generate_channel_gain(next_loc) #channel gain untuk s_t
                 s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
+                if info['data_rate_pass']>= 0.8*env.nodes and info['total_power'] <= P :
+                        opt.a_lr=opt.a_lr * 0.1
+                        opt.c_lr=opt.c_lr * 0.1
+                        P-=0.5*P
+                    
                 writer.add_scalar("Reward iterasi", r, total_steps)
                 if total_steps > opt.random_steps:
                     #if total_steps % 500 == 0 :
