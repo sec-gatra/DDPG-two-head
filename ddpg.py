@@ -1,4 +1,4 @@
-from utils20 import Actor, Q_Critic #kalau mau testing pake model lama, tinggal ganti ke utils20
+from utils10 import Actor, Q_Critic #kalau mau testing pake model lama, tinggal ganti ke utils20
 import torch.nn.functional as F
 import numpy as np
 import torch
