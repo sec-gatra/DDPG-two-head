@@ -366,13 +366,7 @@ def main():
                 '''train'''
                 if total_steps >= opt.random_steps:
                     a_loss, c_loss = agent.train()
-                    writer.add_scalar("Loss/Actor", a_loss, total_steps)
-                    writer.add_scalar("Loss/Critic", c_loss, total_steps)
-                    with torch.no_grad():
-                        s_batch, a_batch, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
-                        q_val = agent.q_critic(s_batch, a_batch).mean().item()
-                        writer.add_scalar("Q_value/Mean", q_val, total_steps)
-                if c_loss <= 50 and total_steps >= opt.random_steps :
+                    if c_loss <= 50 and total_steps >= opt.random_steps :
                         print("hei bos, i found iteration that it's critic loss is less than 50")
                         print(total_steps)
                         print(c_loss)
@@ -380,6 +374,13 @@ def main():
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save_from_critic.append(int(total_steps))
                         c_min -=1
+                    writer.add_scalar("Loss/Actor", a_loss, total_steps)
+                    writer.add_scalar("Loss/Critic", c_loss, total_steps)
+                    with torch.no_grad():
+                        s_batch, a_batch, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
+                        q_val = agent.q_critic(s_batch, a_batch).mean().item()
+                        writer.add_scalar("Q_value/Mean", q_val, total_steps)
+
         
                 '''record & log'''
                 if total_steps % opt.eval_interval == 0:
