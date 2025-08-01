@@ -21,7 +21,7 @@ parser.add_argument('--Loadmodel', type=str2bool, default=False, help='Load pret
 parser.add_argument('--ModelIdex', type=int, default=100, help='which model to load')
 
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--Max_train_steps', type=int, default = 150000, help='Max training steps') #aslinya 5e6
+parser.add_argument('--Max_train_steps', type=int, default = 100000, help='Max training steps') #aslinya 5e6
 parser.add_argument('--save_interval', type=int, default=2500, help='Model saving interval, in steps.') #aslinya 1e5
 parser.add_argument('--eval_interval', type=int, default=500, help='Model evaluating interval, in steps.') #aslinya 2e3
 
@@ -320,6 +320,9 @@ def main():
         total_steps = 0
         lr_steps = 0
         save2=[]
+        save_from_critic =[]
+        save_from_actor = []
+        c_min = 50
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
             lr_steps+=1
             if lr_steps==sepertiga_eps :
@@ -369,8 +372,11 @@ def main():
                         s_batch, a_batch, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
                         q_val = agent.q_critic(s_batch, a_batch).mean().item()
                         writer.add_scalar("Q_value/Mean", q_val, total_steps)
-                    # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, actor_loss:{a_loss}')
-                    # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, c_loss:{c_loss}')
+                if c_loss <= 50 and total_steps >= opt.random_steps :
+                    
+                        agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
+                        save_from_critic.append(int(total_steps))
+                        c_min -=1
         
                 '''record & log'''
                 if total_steps % opt.eval_interval == 0:
@@ -384,7 +390,7 @@ def main():
                     print(f'total rate : {result["total_rate"]}')
                     print(f'step : {total_steps}')
                     print(f'rate lolos : {result["data_rate_lolos"]}')
-                    if result['avg_EE'] >= 30 and result['data_rate_lolos']>=0.8*env.nodes :
+                    if result['avg_EE'] >= 130 and result['data_rate_lolos']>=0.8*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save2.append(int(total_steps))
@@ -393,21 +399,8 @@ def main():
                     writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
                     #writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
                     writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
-                    '''
-                    if total_steps == opt.Max_train_steps :
-                        for i in range(60000):
-                            if i % 2000 == 0:
-                                loc_extend= env.generate_positions() #lokasi untuk s_t
-                                channel_gain_extend=env.generate_channel_gain(loc_extend) #channel gain untuk s_t
-                                state_extend,inf=eval_env.reset(channel_gain_extend)
-                                state_extend = np.array(state_extend, dtype=np.float32)
-                                result_reward2 = evaluate_policy_reward(channel_gain_extend,state_extend,eval_env, agent, turns=3)
-                                writer.add_scalar('reward training ddpg', result_reward2, global_step=total_steps+i)
-                    '''
-                            
 
-                        
-
+                                            
                     #print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, data rate : {result["pct_data_ok"]}')
 
 
@@ -423,7 +416,8 @@ def main():
         print(EE_DDPG)
         print(EE_RAND)
         print("The end")
-        print(save2)
+        print(f'model save based on data rate and energi efisiensi{save2}')
+        print (f'model save based on critic loss {save_from_critic}')
 
 #%load_ext tensorboard
 #%tensorboard --logdir runs
