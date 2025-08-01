@@ -373,6 +373,9 @@ def main():
                         q_val = agent.q_critic(s_batch, a_batch).mean().item()
                         writer.add_scalar("Q_value/Mean", q_val, total_steps)
                 if c_loss <= 50 and total_steps >= opt.random_steps :
+                        print("hei bos, i found iteration that it's critic loss is less than 50")
+                        print(total_steps)
+                        print(c_loss)
                     
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save_from_critic.append(int(total_steps))
