@@ -27,14 +27,14 @@ parser.add_argument('--Loadmodel', type=str2bool, default=False, help='Load pret
 parser.add_argument('--ModelIdex', type=int, default=100, help='which model to load')
 
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--Max_train_steps', type=int, default = 20000, help='Max training steps') #aslinya 5e6
+parser.add_argument('--Max_train_steps', type=int, default = 100000, help='Max training steps') #aslinya 5e6
 parser.add_argument('--save_interval', type=int, default=2000, help='Model saving interval, in steps.') #aslinya 1e5
 parser.add_argument('--eval_interval', type=int, default=500, help='Model evaluating interval, in steps.') #aslinya 2e3
 
 parser.add_argument('--gamma', type=float, default=0.99, help='Discounted Factor')
 parser.add_argument('--net_width', type=int, default=1024, help='Hidden net width, s_dim-400-300-a_dim')
-parser.add_argument('--a_lr', type=float, default=1e-3, help='Learning rate of actor') # 2e-3
-parser.add_argument('--c_lr', type=float, default=1e-4, help='Learning rate of critic') # 1e-3
+parser.add_argument('--a_lr', type=float, default=5e-5, help='Learning rate of actor') # 2e-3
+parser.add_argument('--c_lr', type=float, default=3e-4, help='Learning rate of critic') # 1e-3
 parser.add_argument('--batch_size', type=int, default=128, help='batch_size of training')
 parser.add_argument('--random_steps', type=int, default=5000, help='random steps before trianing')#70000
 parser.add_argument('--noise', type=float, default=0.05, help='exploring noise') #aslinya 0.1
