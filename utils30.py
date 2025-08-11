@@ -137,11 +137,11 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
 
             # aksi deterministik
             a = agent.select_action(state, deterministic=True)
-            print('power ddpg')
-            print(a)
+            #print('power ddpg')
+            #print(a)
             #a=env.sample_valid_power()
             #random_allocation 
-            a_rand=env.sample_valid_power2()
+            a_rand=env.sample_valid_power()
             # generate next state
             next_loc         = env.generate_positions()
             next_channel_gain= env.generate_channel_gain(next_loc)
@@ -159,20 +159,7 @@ def evaluate_policy(channel_gain, state, env, agent, turns=1):
             print(f'DDPG power : {a}, reward :{r}, total power {np.sum(a)}')
             print(f'random power : {a_rand}, reward :{r1}, total power {np.sum(a_rand)}')
             data_rate_rand=info1['data_rate']
-            '''
-            for i in range(200):
-                a = agent.select_action(state, deterministic=True)
-                next_loc         = env.generate_positions()
-                next_channel_gain= env.generate_channel_gain(next_loc)
-                s_next, r, dw, tr, info = env.step(a,a_prev, channel_gain, next_channel_gain)
-                total_rate_lolos+=info['data_rate_pass']
-                #print(total_rate_lolos)
-                state = s_next
-                channel_gain = next_channel_gain
-                a_prev=a
-            '''
-                
-                
+                        
         
             # cek constraint power: total_power ≤ P_th
             if np.sum(a) <= P_th:
