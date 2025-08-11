@@ -21,7 +21,7 @@ parser.add_argument('--Loadmodel', type=str2bool, default=False, help='Load pret
 parser.add_argument('--ModelIdex', type=int, default=100, help='which model to load')
 
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--Max_train_steps', type=int, default = 100000, help='Max training steps') #aslinya 5e6
+parser.add_argument('--Max_train_steps', type=int, default = 500000, help='Max training steps') #aslinya 5e6
 parser.add_argument('--save_interval', type=int, default=2500, help='Model saving interval, in steps.') #aslinya 1e5
 parser.add_argument('--eval_interval', type=int, default=500, help='Model evaluating interval, in steps.') #aslinya 2e3
 
@@ -316,7 +316,7 @@ def main():
         last_model_path = None
         while total_steps < opt.Max_train_steps: 
             lr_steps+=1
-            if total_steps%10000==0 :
+            if total_steps%100000==0 :
                 opt.a_lr=0.3 * opt.a_lr
                 opt.c_lr=0.3 * opt.c_lr
                 opt.noise=opt.noise-0.01
