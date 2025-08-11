@@ -21,7 +21,7 @@ parser.add_argument('--Loadmodel', type=str2bool, default=False, help='Load pret
 parser.add_argument('--ModelIdex', type=int, default=100, help='which model to load')
 
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--Max_train_steps', type=int, default = 150000, help='Max training steps') #aslinya 5e6
+parser.add_argument('--Max_train_steps', type=int, default = 100000, help='Max training steps') #aslinya 5e6
 parser.add_argument('--save_interval', type=int, default=2000, help='Model saving interval, in steps.') #aslinya 1e5
 parser.add_argument('--eval_interval', type=int, default=500, help='Model evaluating interval, in steps.') #aslinya 2e3
 
@@ -30,7 +30,7 @@ parser.add_argument('--net_width', type=int, default=1024, help='Hidden net widt
 parser.add_argument('--a_lr', type=float, default=5e-5, help='Learning rate of actor') # 1e-4
 parser.add_argument('--c_lr', type=float, default=3e-4, help='Learning rate of critic') # 1e-5 bagus
 parser.add_argument('--batch_size', type=int, default=128, help='batch_size of training')
-parser.add_argument('--random_steps', type=int, default=10000, help='random steps before trianing')
+parser.add_argument('--random_steps', type=int, default=5000, help='random steps before trianing')
 parser.add_argument('--noise', type=float, default=0.05, help='exploring noise') #aslinya 0.1
 opt = parser.parse_args()
 opt.dvc = torch.device(opt.dvc) # from str to torch.device
@@ -324,41 +324,35 @@ def main():
         lr_steps = 0
         save=[]
         save2=[]
+        save_from_critic = []
+        c_min = 9999
+        last_model_path = None
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
             #lr_steps+=1
-            if total_steps%2000==0 :
-                opt.a_lr=0.8 * opt.a_lr
-                opt.c_lr=0.8 * opt.c_lr
-            #    lr_steps=0
-            #    opt.noise -=0.001
+            if total_steps%10000==0 :
+                opt.a_lr=0.3 * opt.a_lr
+                opt.c_lr=0.3 * opt.c_lr
+                opt.noise=opt.noise-0.01
+                lr_steps=0
 
             loc= env.generate_positions() #lokasi untuk s_t
             channel_gain=env.generate_channel_gain(loc) #channel gain untuk s_t
-            s,a_prev,info= env.reset(channel_gain, seed=env_seed)  # Do not use opt.seed directly, or it can overfit to opt.seed
+            s,a_prev,info= env.reset(channel_gain, seed=env_seed)  
             env_seed += 1
             done = False
             langkah = 0
             '''Interact & trian'''
             while not done: 
                 langkah +=1
-                if total_steps <= opt.random_steps: #aslinya < aja, ide pengubahan ini tuh supaya selec action di train dulu.
+                if total_steps <= opt.random_steps: 
                     a = env.sample_valid_power2()
                 else: 
                     a = agent.select_action(s, deterministic=False)
 
-                next_loc= env.generate_positions() #lokasi untuk s_t
-                next_channel_gain=env.generate_channel_gain(next_loc) #channel gain untuk s_t
-                s_next, r, dw, tr, info= env.step(a,a_prev,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
+                next_loc= env.generate_positions()
+                next_channel_gain=env.generate_channel_gain(next_loc) 
+                s_next, r, dw, tr, info= env.step(a,a_prev,channel_gain,next_channel_gain) 
                 writer.add_scalar("Reward iterasi", r, total_steps)
-                #writer.add_scalar('train/coverage',     info['coverage'],  total_steps)
-                '''
-                print(a)
-                print(np.sum(a))
-                print(f'data rate lolos : {info["data_rate_pass"]}')
-                print(f'rate violation : {info["rate_violation"]}')
-                print(f'EE: {info["EE"]}')
-                print(f'step : {total_steps}')
-                '''
                 if total_steps > opt.random_steps:
                     if info['EE'] >= 80 and info['data_rate_pass']>=0.8*env.nodes :
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
@@ -366,12 +360,8 @@ def main():
                 loc= env.generate_positions()
                 channel_gain=env.generate_channel_gain(loc)
                 if langkah == iterasi :
-                    tr= True
-                  
-                    
+                    tr= True  
                 done = (dw or tr)
-                #cost = info['rate_violation']
-                #agent.replay_buffer.add(np.array(s, dtype=np.float32), a, r, np.array(s_next, dtype=np.float32), dw)
                 agent.replay_buffer.add(np.array(s, dtype=np.float32), a, r, np.array(s_next, dtype=np.float32), dw)
                 s = s_next
                 a_prev = a
@@ -383,19 +373,27 @@ def main():
                     a_loss, c_loss = agent.train()
                     writer.add_scalar("Loss/Actor", a_loss, total_steps)
                     writer.add_scalar("Loss/Critic", c_loss, total_steps)
+                    if c_loss <= c_min:
+                        if last_model_path is not None and os.path.exists(last_model_path):
+                            os.remove(last_model_path)
+                
+                        # simpan model baru
+                        model_path = f"{BrifEnvName[opt.EnvIdex]}_{int(total_steps)}.pth"
+                        agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
+                
+                        # update info terakhir
+                        last_model_path = model_path
+                        save_from_critic.clear()
+                        save_from_critic.append(total_steps)
+                        c_min = c_loss
+
                     with torch.no_grad():
-                        #s_batch, a_batch, _, _, _ = agent.replay_buffer.sample(opt.batch_size)
                         s_batch, a_batch, _, _, _= agent.replay_buffer.sample(opt.batch_size)
                         q_val = agent.q_critic(s_batch, a_batch).mean().item()
                         writer.add_scalar("Q_value/Mean", q_val, total_steps)
-                    # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, actor_loss:{a_loss}')
-                    # print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, c_loss:{c_loss}')
         
                 '''record & log'''
                 if total_steps % opt.eval_interval == 0:
-                #if total_steps == opt.Max_train_steps:
-                    #st=0
-                    #for i in range(200):
                     state_eval,a_prev,inf=eval_env.reset(channel_gain)
                     state_eval = np.array(state_eval, dtype=np.float32)
                     result = evaluate_policy(channel_gain,state_eval,eval_env, agent, turns=1)
@@ -406,49 +404,20 @@ def main():
                     print(f'EE: {result["avg_EE"]}')
                     print(f'Actor rate : {opt.a_lr}, critic rate : {opt.c_lr}')
                     print(f'step : {total_steps}')
-                    #print(f'percentase rate lolos: {result["total_rate_lolos"]}')
-                    if result['avg_EE'] >= 10 and result['data_rate_lolos']>=0.8*env.nodes :
-                        
+                    if result['avg_EE'] >= 50 and result['data_rate_lolos']>=0.7*env.nodes :
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save2.append(int(total_steps))
-                        #ee.append(info['EE'])
-                        #datret.append(info['data_rate_pass'])
                     if total_steps > opt.random_steps :
                         writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
-                    #writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
-                        writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
-                    '''
-                    if total_steps == opt.Max_train_steps :
-                        for i in range(60000):
-                            if i % 2000 == 0:
-                                loc_extend= env.generate_positions() #lokasi untuk s_t
-                                channel_gain_extend=env.generate_channel_gain(loc_extend) #channel gain untuk s_t
-                                state_extend,inf=eval_env.reset(channel_gain_extend)
-                                state_extend = np.array(state_extend, dtype=np.float32)
-                                result_reward2 = evaluate_policy_reward(channel_gain_extend,state_extend,eval_env, agent, turns=3)
-                                writer.add_scalar('reward training ddpg', result_reward2, global_step=total_steps+i)
-                    '''
-                            
-
-                        
-
-                    #print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, data rate : {result["pct_data_ok"]}')
+                        writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)                           
 
 
                 '''save model'''
-               # if total_steps % opt.save_interval == 0:
-               #     agent.save(BrifEnvName[opt.EnvIdex], int(total_steps/1000))
-                s = s_next
                 channel_gain=next_channel_gain
 
-# Simpan ke Excel
-        #df.to_excel(f'energi_efisiensi.xlsx', index=False)
-        #df1.to_excel(f'all_data_rate.xlsx', index=False)
-        print(EE_DDPG)
-        print(EE_RAND)
         print("The end")
         print(save2)
-        print(save)
+        print(save_from_critic)
 
 #%load_ext tensorboard
 #%tensorboard --logdir runs
