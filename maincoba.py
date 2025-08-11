@@ -383,6 +383,7 @@ def main():
         c_min = 9999
         ee=[]
         datret=[]
+        last_model_path = None
         P = 1
         while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
             lr_steps+=1
