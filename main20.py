@@ -42,7 +42,6 @@ def compute_cdf(data):
 
 def main():
     EnvName = ['Power Allocation','LunarLanderContinuous-v2','Humanoid-v4','HalfCheetah-v4','BipedalWalker-v3','BipedalWalkerHardcore-v3']
-    #BrifEnvName = ['PV1', 'LLdV2', 'Humanv4', 'HCv4','BWv3', 'BWHv3']
     BrifEnvName = ['6G', 'LLdV2', 'Humanv4', 'HCv4','BWv3', 'BWHv3']
     
     # Build Env
@@ -50,10 +49,8 @@ def main():
     eval_env = GameState(20,10)
     opt.state_dim = env.observation_space
     opt.action_dim = env.action_space
-    opt.max_action = env.p_max   #remark: action space【-max,max】
-    #print(f'Env:{EnvName[opt.EnvIdex]}  state_dim:{opt.state_dim}  action_dim:{opt.action_dim}  '
-    #      f'max_a:{opt.max_action}  min_a:{env.action_space.low[0]}  max_e_steps:{env._max_episode_steps}')
-
+    opt.max_action = env.p_max   
+    
     #variable tambahan 
     iterasi = 200
     total_episode = -(-opt.Max_train_steps//iterasi)
@@ -86,12 +83,8 @@ def main():
 
     # Build DRL model
     if not os.path.exists('model'): os.mkdir('model')
-    agent = DDPG_agent(**vars(opt)) # var: transfer argparse to dictionary
-    #dummy_s = torch.zeros((1, opt.state_dim), device=opt.dvc)
-    #print("Initial actor a:", agent.actor(dummy_s).cpu().detach().numpy())
+    agent = DDPG_agent(**vars(opt))
     print("state_dim, action_dim =", opt.state_dim, opt.action_dim)
-    #dummy = torch.zeros(1, opt.state_dim).to(opt.dvc)
-    #print("actor out shape:", agent.actor(dummy).shape)
     if opt.Loadmodel: agent.load(BrifEnvName[opt.EnvIdex], opt.ModelIdex)
 
     if opt.render:
@@ -240,8 +233,6 @@ def main():
         ax5.axvline(R_min, color='red', linestyle='--', label=f'R_min = {R_min}')
         ax5.set_xlabel('Data Rate')
         ax5.set_ylabel('CDF')
-        #ax5.tick_params(axis='x', labelsize=14)
-        #ax5.tick_params(axis='y', labelsize=14)
         ax5.set_title('CDF of Data Rate of 20 nodes')
         ax5.legend()
         ax5.grid(False)
@@ -315,41 +306,38 @@ def main():
         df.to_excel(f'energi_efisiensi.xlsx', index=False)
         df1.to_excel(f'all_data_rate.xlsx', index=False)
             
-            #print('EnvName:', BrifEnvName[opt.EnvIdex], 'score:', score, )
+
     else:
         total_steps = 0
         lr_steps = 0
         save2=[]
-        save_from_critic =[]
-        save_from_actor = []
-        c_min = 50
-        while total_steps < opt.Max_train_steps: # ini loop episode. Jadi total episode adalah Max_train_steps/200
+        save_from_critic = []
+        c_min = 99999
+        last_model_path = None
+        while total_steps < opt.Max_train_steps: 
             lr_steps+=1
             if lr_steps==sepertiga_eps :
                 opt.a_lr=0.3 * opt.a_lr
                 opt.c_lr=0.3 * opt.c_lr
                 lr_steps=0
                 opt.noise -=0.1
-            loc= env.generate_positions() #lokasi untuk s_t
-            channel_gain=env.generate_channel_gain(loc) #channel gain untuk s_t
-            s,info= env.reset(channel_gain, seed=env_seed)  # Do not use opt.seed directly, or it can overfit to opt.seed
+            loc= env.generate_positions() 
+            channel_gain=env.generate_channel_gain(loc)
+            s,info= env.reset(channel_gain, seed=env_seed)  
             env_seed += 1
             done = False
             langkah = 0
             '''Interact & trian'''
             while not done: 
                 langkah +=1
-                if total_steps <= opt.random_steps: #aslinya < aja, ide pengubahan ini tuh supaya selec action di train dulu.
+                if total_steps <= opt.random_steps: 
                     a = env.sample_valid_power2()
                 else: 
                     a = agent.select_action(s, deterministic=False)
-                next_loc= env.generate_positions() #lokasi untuk s_t
-                next_channel_gain=env.generate_channel_gain(next_loc) #channel gain untuk s_t
-                s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) # dw: dead&win; tr: truncated
+                next_loc= env.generate_positions()
+                next_channel_gain=env.generate_channel_gain(next_loc)
+                s_next, r, dw, tr, info= env.step(a,channel_gain,next_channel_gain) 
                 writer.add_scalar("Reward iterasi", r, total_steps)
-                if total_steps > opt.random_steps:
-                    if info['EE'] >= 20 and info['data_rate_pass']>=0.8*env.nodes :
-                        agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                 loc= env.generate_positions()
                 channel_gain=env.generate_channel_gain(loc)
                 if langkah == iterasi :
@@ -366,14 +354,19 @@ def main():
                 '''train'''
                 if total_steps >= opt.random_steps:
                     a_loss, c_loss = agent.train()
-                    if c_loss <= 50 and total_steps >= opt.random_steps :
-                        print("hei bos, i found iteration that it's critic loss is less than 50")
-                        print(total_steps)
-                        print(c_loss)
-                    
+                    if c_loss <= c_min:
+                        if last_model_path is not None and os.path.exists(last_model_path):
+                            os.remove(last_model_path)
+                
+                        # simpan model baru
+                        model_path = f"{BrifEnvName[opt.EnvIdex]}_{int(total_steps)}.pth"
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
-                        save_from_critic.append(int(total_steps))
-                        c_min -=1
+                
+                        # update info terakhir
+                        last_model_path = model_path
+                        save_from_critic.clear()
+                        save_from_critic.append(total_steps)
+                        c_min = c_loss
                     writer.add_scalar("Loss/Actor", a_loss, total_steps)
                     writer.add_scalar("Loss/Critic", c_loss, total_steps)
                     with torch.no_grad():
@@ -384,9 +377,6 @@ def main():
         
                 '''record & log'''
                 if total_steps % opt.eval_interval == 0:
-                #if total_steps == opt.Max_train_steps:
-                    #st=0
-                    #for i in range(200):
                     state_eval,inf=eval_env.reset(channel_gain)
                     state_eval = np.array(state_eval, dtype=np.float32)
                     result = evaluate_policy(channel_gain,state_eval,eval_env, agent, turns=1)
@@ -398,32 +388,14 @@ def main():
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
                         save2.append(int(total_steps))
-                        #ee.append(info['EE'])
-                        #datret.append(info['data_rate_pass'])
                     writer.add_scalar('reward_training', result['avg_score'], global_step=total_steps)
-                    #writer.add_scalar('reward_train', result['reward_train'], global_step=total_steps)
                     writer.add_scalar('reward training ddpg', result_reward, global_step=total_steps)
-
-                                            
-                    #print(f'EnvName:{BrifEnvName[opt.EnvIdex]}, Steps: {int(total_steps/1000)}k, data rate : {result["pct_data_ok"]}')
-
-
-                '''save model'''
-               # if total_steps % opt.save_interval == 0:
-               #     agent.save(BrifEnvName[opt.EnvIdex], int(total_steps/1000))
+                                        
                 s = s_next
                 channel_gain=next_channel_gain
 
-# Simpan ke Excel
-        #df.to_excel(f'energi_efisiensi.xlsx', index=False)
-        #df1.to_excel(f'all_data_rate.xlsx', index=False)
-        print(EE_DDPG)
-        print(EE_RAND)
         print("The end")
         print(f'model save based on data rate and energi efisiensi{save2}')
         print (f'model save based on critic loss {save_from_critic}')
-
-#%load_ext tensorboard
-#%tensorboard --logdir runs
 if __name__ == '__main__':
     main()
