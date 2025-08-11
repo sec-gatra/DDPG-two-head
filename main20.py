@@ -316,11 +316,11 @@ def main():
         last_model_path = None
         while total_steps < opt.Max_train_steps: 
             lr_steps+=1
-            if lr_steps==sepertiga_eps :
+            if total_steps%10000==0 :
                 opt.a_lr=0.3 * opt.a_lr
                 opt.c_lr=0.3 * opt.c_lr
+                opt.noise=opt.noise-0.01
                 lr_steps=0
-                opt.noise -=0.1
             loc= env.generate_positions() 
             channel_gain=env.generate_channel_gain(loc)
             s,info= env.reset(channel_gain, seed=env_seed)  
