@@ -27,16 +27,16 @@ parser.add_argument('--Loadmodel', type=str2bool, default=False, help='Load pret
 parser.add_argument('--ModelIdex', type=int, default=100, help='which model to load')
 
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--Max_train_steps', type=int, default = 500000, help='Max training steps') #aslinya 5e6
+parser.add_argument('--Max_train_steps', type=int, default = 100000, help='Max training steps') #aslinya 5e6
 parser.add_argument('--save_interval', type=int, default=2000, help='Model saving interval, in steps.') #aslinya 1e5
 parser.add_argument('--eval_interval', type=int, default=500, help='Model evaluating interval, in steps.') #aslinya 2e3
 
 parser.add_argument('--gamma', type=float, default=0.99, help='Discounted Factor')
 parser.add_argument('--net_width', type=int, default=1024, help='Hidden net width, s_dim-400-300-a_dim')
-parser.add_argument('--a_lr', type=float, default=1e-4, help='Learning rate of actor') # 2e-3
-parser.add_argument('--c_lr', type=float, default=1e-3, help='Learning rate of critic') # 1e-3
+parser.add_argument('--a_lr', type=float, default=5e-5, help='Learning rate of actor') # 2e-3
+parser.add_argument('--c_lr', type=float, default=3e-4, help='Learning rate of critic') # 1e-3
 parser.add_argument('--batch_size', type=int, default=128, help='batch_size of training')
-parser.add_argument('--random_steps', type=int, default=5000, help='random steps before trianing')#70000
+parser.add_argument('--random_steps', type=int, default=10000, help='random steps before trianing')#70000
 parser.add_argument('--noise', type=float, default=0.05, help='exploring noise') #aslinya 0.1
 opt = parser.parse_args()
 opt.dvc = torch.device(opt.dvc) # from str to torch.device
@@ -71,6 +71,7 @@ def main():
     ALL_DATARATES_NODES = [[] for _ in range(env.nodes)]  # List terpisah untuk setiap node
     ALL_DATARATES=[]
     ALL_DATARATES_RAND=[]
+    REWARD =[]
     data_rate_1 =[]
     data_rate_4 =[]
     data_rate_7 =[]
@@ -456,6 +457,7 @@ def main():
                     state_eval = np.array(state_eval, dtype=np.float32)
                     result = evaluate_policy(channel_gain,state_eval,eval_env, agent, turns=1)
                     result_reward = evaluate_policy_reward(channel_gain,state_eval,eval_env, agent, turns=3)
+                    REWARD.append(result_reward)
                     if result['avg_EE'] >= 100 and result['data_rate_lolos']>=0.8*env.nodes :
                         
                         agent.save(BrifEnvName[opt.EnvIdex], int(total_steps))
@@ -477,8 +479,14 @@ def main():
                #     agent.save(BrifEnvName[opt.EnvIdex], int(total_steps/1000))
                 s = s_next
                 channel_gain=next_channel_gain
+                
+        df2 = pd.DataFrame({
+            'Reward': REWARD
+        })
 
-       
+# Simpan ke Excel
+        df2.to_excel(f'reward.xlsx', index=False)
+           
         print("The end")
         print(save2)
         print(save_from_critic)
